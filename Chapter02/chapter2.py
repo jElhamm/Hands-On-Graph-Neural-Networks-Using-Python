@@ -92,3 +92,26 @@ class SimpleGraphOperations:
         _dfs(start_node)
         return visited
     
+
+# ------------------------------------------------------- Graph Definitions, Visualization, and Analysis ------------------------------------------------------------
+
+# Define graphs
+simple_graph = nx.Graph()
+simple_graph.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), ('B', 'E'), ('C', 'F'), ('C', 'G')])
+directed_graph = nx.DiGraph()
+directed_graph.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), ('B', 'E'), ('C', 'F'), ('C', 'G')])
+
+weighted_graph = nx.Graph()
+weighted_graph.add_edges_from([
+    ('A', 'B', {"weight": 10}),
+    ('A', 'C', {"weight": 20}),
+    ('B', 'D', {"weight": 30}),
+    ('B', 'E', {"weight": 40}),
+    ('C', 'F', {"weight": 50}),
+    ('C', 'G', {"weight": 60})
+])
+
+# Create visualizer and analyzer instances
+visualizer = GraphVisualizer()
+analyzer = GraphAnalyzer()
+    
