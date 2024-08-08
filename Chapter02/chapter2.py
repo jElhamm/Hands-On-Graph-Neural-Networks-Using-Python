@@ -66,3 +66,29 @@ class GraphAnalyzer:
         print(f"Closeness centrality = {nx.closeness_centrality(graph)}")
         print(f"Betweenness centrality = {nx.betweenness_centrality(graph)}")
     
+
+# --------------------------------------- This class provides static methods for performing basic graph operations ------------------------------------------------
+        
+class SimpleGraphOperations:
+    @staticmethod
+    def bfs(graph, start_node):
+        visited, queue = [start_node], [start_node]
+        while queue:
+            node = queue.pop(0)
+            for neighbor in graph.neighbors(node):
+                if neighbor not in visited:
+                    visited.append(neighbor)
+                    queue.append(neighbor)
+        return visited
+
+    @staticmethod
+    def dfs(graph, start_node):
+        visited = []
+        def _dfs(node):
+            if node not in visited:
+                visited.append(node)
+                for neighbor in graph.neighbors(node):
+                    _dfs(neighbor)
+        _dfs(start_node)
+        return visited
+    
