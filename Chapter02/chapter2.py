@@ -52,3 +52,17 @@ class GraphVisualizer:
         nx.draw_networkx_edge_labels(self.graph, pos=pos, edge_labels=labels)
         plt.show()
     
+
+# --------------------------------------- This class provides static methods for analyzing graphs using NetworkX ------------------------------------------------
+        
+class GraphAnalyzer:
+    @staticmethod
+    def check_connectivity(graph):
+        return nx.is_connected(graph)
+
+    @staticmethod
+    def print_centrality_measures(graph):
+        print(f"Degree centrality = {nx.degree_centrality(graph)}")
+        print(f"Closeness centrality = {nx.closeness_centrality(graph)}")
+        print(f"Betweenness centrality = {nx.betweenness_centrality(graph)}")
+    
