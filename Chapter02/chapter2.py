@@ -115,3 +115,28 @@ weighted_graph.add_edges_from([
 visualizer = GraphVisualizer()
 analyzer = GraphAnalyzer()
     
+# Visualize and analyze simple graph
+visualizer.set_graph(simple_graph)
+visualizer.draw_graph(layout='spring')
+visualizer.set_graph(directed_graph)
+visualizer.draw_graph(layout='spring')
+visualizer.set_graph(weighted_graph)
+visualizer.draw_weighted_graph()
+
+# Check connectivity of simple graphs
+graph1 = nx.Graph()
+graph1.add_edges_from([(1, 2), (2, 3), (3, 1), (4, 5)])
+print(f"Is Graph 1 connected? {analyzer.check_connectivity(graph1)}")
+
+graph2 = nx.Graph()
+graph2.add_edges_from([(1, 2), (2, 3), (3, 1), (1, 4)])
+print(f"Is Graph 2 connected? {analyzer.check_connectivity(graph2)}")
+
+# Print centrality measures for the simple graph
+print("Centrality Measures:")
+analyzer.print_centrality_measures(simple_graph)
+
+# Perform BFS and DFS
+print("BFS Traversal:", SimpleGraphOperations.bfs(simple_graph, 'A'))
+print("DFS Traversal:", SimpleGraphOperations.dfs(simple_graph, 'A'))
+    
