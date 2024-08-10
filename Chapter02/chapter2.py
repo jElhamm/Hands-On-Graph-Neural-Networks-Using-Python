@@ -140,3 +140,31 @@ analyzer.print_centrality_measures(simple_graph)
 print("BFS Traversal:", SimpleGraphOperations.bfs(simple_graph, 'A'))
 print("DFS Traversal:", SimpleGraphOperations.dfs(simple_graph, 'A'))
     
+# Adjacency matrix and adjacency list examples
+adj_matrix = [
+    [0, 1, 1, 0, 0, 0, 0],
+    [1, 0, 0, 1, 1, 0, 0],
+    [1, 0, 0, 0, 0, 1, 1],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0]
+]
+
+adj_list = {
+    0: [1, 2],
+    1: [0, 3, 4],
+    2: [0, 5, 6],
+    3: [1],
+    4: [1],
+    5: [2],
+    6: [2]
+}
+
+print("Adjacency Matrix:")
+for row in adj_matrix:
+    print(row)
+
+print("\nAdjacency List:")
+for key, value in adj_list.items():
+    print(f"{key}: {value}")
