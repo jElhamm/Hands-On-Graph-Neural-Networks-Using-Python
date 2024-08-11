@@ -60,3 +60,9 @@ class TextProcessor:
             skipgrams.append((self.text[i], context))
         return skipgrams
     
+    def display_skipgrams(self, num=2):
+        print(self.skipgrams[:num])
+
+    def display_vocab_size(self):
+        print(f"Length of vocabulary = {self.vocab_size}")
+    
