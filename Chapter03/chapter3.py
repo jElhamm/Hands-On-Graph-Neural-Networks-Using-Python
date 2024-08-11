@@ -66,3 +66,19 @@ class TextProcessor:
     def display_vocab_size(self):
         print(f"Length of vocabulary = {self.vocab_size}")
     
+
+# --------------------------------------------------------------- create and manage a Word2Vec model for word embeddings ----------------------------------------------------------------
+        
+class WordEmbeddingModel:
+    def __init__(self, sentences, vector_size=10, window=2, sg=1, min_count=0, workers=1, seed=0):
+        self.model = Word2Vec(sentences,
+                              vector_size=vector_size,
+                              window=window,
+                              sg=sg,
+                              min_count=min_count,
+                              workers=workers,
+                              seed=seed)
+
+    def train_model(self, sentences, epochs=10):
+        self.model.train(sentences, total_examples=self.model.corpus_count, epochs=epochs)
+    
