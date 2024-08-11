@@ -41,4 +41,22 @@ tincidunt velit eget nisi ornare convallis. Pellentesque habitant morbi
 tristique senectus et netus et malesuada fames ac turpis egestas. Donec
 tristique ultrices tortor at accumsan.
 """.split()
+
+
+# --------------------------------------------- handle text processing tasks, including skipgram generation and vocabulary size calculation ---------------------------------------------
+
+class TextProcessor:
+    def __init__(self, text, context_size):
+        self.text = text
+        self.context_size = context_size
+        self.vocab = set(text)
+        self.vocab_size = len(self.vocab)
+        self.skipgrams = self.generate_skipgrams()
+
+    def generate_skipgrams(self):
+        skipgrams = []
+        for i in range(self.context_size, len(self.text) - self.context_size):
+            context = [self.text[j] for j in np.arange(i - self.context_size, i + self.context_size + 1) if j != i]
+            skipgrams.append((self.text[i], context))
+        return skipgrams
     
