@@ -82,3 +82,10 @@ class WordEmbeddingModel:
     def train_model(self, sentences, epochs=10):
         self.model.train(sentences, total_examples=self.model.corpus_count, epochs=epochs)
     
+    def display_word_embedding(self, word_index=0):
+        print('\nWord embedding =')
+        print(self.model.wv[self.model.wv.index_to_key[word_index]])
+
+    def display_embedding_shape(self):
+        print(f'Shape of embedding matrix: {self.model.wv.vectors.shape}')
+    
