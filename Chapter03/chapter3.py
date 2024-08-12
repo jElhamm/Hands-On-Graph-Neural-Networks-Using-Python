@@ -89,3 +89,21 @@ class WordEmbeddingModel:
     def display_embedding_shape(self):
         print(f'Shape of embedding matrix: {self.model.wv.vectors.shape}')
     
+
+# ------------------------------------------------------------------- Class to visualize graphs using matplotlib ----------------------------------------------------------------------
+        
+class GraphVisualizer:
+    @staticmethod
+    def plot_graph(graph, title="Graph"):
+        plt.figure()
+        plt.axis('off')
+        nx.draw_networkx(graph,
+                         pos=nx.spring_layout(graph, seed=0),
+                         node_size=600,
+                         cmap='coolwarm',
+                         font_size=14,
+                         font_color='white'
+                         )
+        plt.title(title)
+        plt.show()
+    
