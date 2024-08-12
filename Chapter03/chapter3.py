@@ -122,3 +122,27 @@ class GraphVisualizer:
         plt.title("Karate Club Graph")
         plt.show()
     
+
+# -------------------------------------------------------------------- Class to perform random walks on a graph ---------------------------------------------------------------------
+        
+class RandomWalker:
+    def __init__(self, graph):
+        self.graph = graph
+        self.walks = []
+
+    def random_walk(self, start, length):
+        walk = [str(start)]
+        for _ in range(length):
+            neighbors = list(self.graph.neighbors(start))
+            next_node = np.random.choice(neighbors)
+            walk.append(str(next_node))
+            start = next_node
+        return walk
+
+    def generate_walks(self, num_walks_per_node=80, walk_length=10):
+        self.walks = []
+        for node in self.graph.nodes:
+            for _ in range(num_walks_per_node):
+                self.walks.append(self.random_walk(node, walk_length))
+        return self.walks
+    
