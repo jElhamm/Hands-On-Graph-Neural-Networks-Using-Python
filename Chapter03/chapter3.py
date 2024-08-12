@@ -107,3 +107,18 @@ class GraphVisualizer:
         plt.title(title)
         plt.show()
     
+    @staticmethod
+    def plot_karate_club_graph(graph, labels):
+        plt.figure(figsize=(12, 12))
+        plt.axis('off')
+        nx.draw_networkx(graph,
+                         pos=nx.spring_layout(graph, seed=0),
+                         node_color=labels,
+                         node_size=800,
+                         cmap='coolwarm',
+                         font_size=14,
+                         font_color='white'
+                         )
+        plt.title("Karate Club Graph")
+        plt.show()
+    
