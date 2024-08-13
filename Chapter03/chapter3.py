@@ -168,3 +168,17 @@ embedding_model.train_model([text])                                             
 embedding_model.display_word_embedding()                                                                                           # Display the word embeddings learned by the model
 embedding_model.display_embedding_shape()                                                                                          # Display the shape of the word embeddings matrix
     
+
+# ------------------------------------------------------------ Create a random walker and Create a Karate Club graph--------------------------------------------------------------------
+
+walker = RandomWalker(graph)                                                                                                       # Create a random walker instance for the Erdos-Renyi graph
+print("\nRandom walk starting from node 0:", walker.random_walk(0, 10))                                                            # Perform a random walk starting from node 0 for 10 steps and print the result
+
+karate_club_graph = nx.karate_club_graph()                                                                                         # Create a Karate Club graph and extract labels based on club membership
+karate_labels = [1 if karate_club_graph.nodes[node]['club'] == 'Officer' else 0 for node in karate_club_graph.nodes]
+GraphVisualizer.plot_karate_club_graph(karate_club_graph, karate_labels)                                                           # Visualize the Karate Club graph with node colors indicating club membershi
+
+karate_walker = RandomWalker(karate_club_graph)                                                                                    # Create a random walker instance for the Karate Club graph
+walks = karate_walker.generate_walks()                                                                                             # Generate random walks from the Karate Club graph and print the first walk
+print("\nFirst random walk:", walks[0])
+    
