@@ -182,3 +182,11 @@ karate_walker = RandomWalker(karate_club_graph)                                 
 walks = karate_walker.generate_walks()                                                                                             # Generate random walks from the Karate Club graph and print the first walk
 print("\nFirst random walk:", walks[0])
     
+
+# ----------------------------------------------------------------------- Initialize a word embedding model ----------------------------------------------------------------------------
+
+walks_embedding_model = WordEmbeddingModel(walks, vector_size=100, window=10)                                                      # Initialize a word embedding model with the generated random walks
+walks_embedding_model.model.build_vocab(walks)                                                                                     # Build vocabulary and train the word embedding model on the random walks
+walks_embedding_model.train_model(walks, epochs=30)
+walks_embedding_model.display_embedding_shape()                                                                                    # Display the shape of the word embeddings matrix
+    
