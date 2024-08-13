@@ -190,3 +190,19 @@ walks_embedding_model.model.build_vocab(walks)                                  
 walks_embedding_model.train_model(walks, epochs=30)
 walks_embedding_model.display_embedding_shape()                                                                                    # Display the shape of the word embeddings matrix
     
+
+# --------------------------------------------------------------------- Print nodes, similarity t-SNE result ----------------------------------------------------------------------------
+
+print('\nNodes that are the most similar to node 0:')                                                                              # Print nodes that are most similar to node 0 based on word embeddings
+for similarity in walks_embedding_model.model.wv.most_similar(positive=['0']):
+    print(f'   {similarity}')
+print(f"\nSimilarity between node 0 and 4: {walks_embedding_model.model.wv.similarity('0', '4')}")                                 # Print similarity score between node 0 and node 4
+
+nodes_wv = np.array([walks_embedding_model.model.wv.get_vector(str(i)) for i in range(len(walks_embedding_model.model.wv))])       # Convert node embeddings to a numpy array
+tsne = TSNE(n_components=2, learning_rate='auto', init='pca', random_state=0)                                                      # Apply t-SNE to reduce the dimensionality of node embeddings for visualization
+tsne_result = tsne.fit_transform(nodes_wv)
+plt.figure(figsize=(6, 6))                                                                                                         # Plot the t-SNE result with nodes colored based on their Karate Club labels
+plt.scatter(tsne_result[:, 0], tsne_result[:, 1], s=100, c=karate_labels, cmap="coolwarm")
+plt.title("TSNE Visualization")
+plt.show()
+    
