@@ -146,3 +146,25 @@ class RandomWalker:
                 self.walks.append(self.random_walk(node, walk_length))
         return self.walks
     
+
+# ------------------------------------------------- Create an Erdos-Renyi graph with 10 nodes and a probability of 0.3 for edge creation -------------------------------------------------
+    
+# Seed is set to 1 for reproducibility
+graph = nx.erdos_renyi_graph(10, 0.3, seed=1)
+GraphVisualizer.plot_graph(graph, "Erdos Renyi Graph")
+
+
+# ---------------------------------------------------------------------------- Initialize the text processor ---------------------------------------------------------------------------- 
+
+text_processor = TextProcessor(text, CONTEXT_SIZE)                                                                                 # Initialize the text processor with a given text and context size
+text_processor.display_skipgrams()                                                                                                 # Display the skip-gram pairs generated from the text
+text_processor.display_vocab_size()                                                                                                # Display the vocabulary size of the text
+
+
+# ------------------------------------------------------------------------------- Initialize the  word  -------------------------------------------------------------------------------- 
+
+embedding_model = WordEmbeddingModel([text])                                                                                       # Initialize a word embedding model with the given text
+embedding_model.train_model([text])                                                                                                # Train the word embedding model using the provided text
+embedding_model.display_word_embedding()                                                                                           # Display the word embeddings learned by the model
+embedding_model.display_embedding_shape()                                                                                          # Display the shape of the word embeddings matrix
+    
