@@ -41,3 +41,23 @@ from sklearn.metrics import accuracy_score
 from gensim.models.word2vec import Word2Vec
 from sklearn.ensemble import RandomForestClassifier
     
+
+
+class GraphVisualization:
+    @staticmethod
+    def create_graph(n=10, p=0.3, seed=1):
+        G = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
+        return G
+
+    @staticmethod
+    def plot_graph(G):
+        plt.figure()
+        plt.axis('off')
+        nx.draw_networkx(G,
+                         pos=nx.spring_layout(G, seed=0),
+                         node_size=600,
+                         cmap='coolwarm',
+                         font_size=14,
+                         font_color='white')
+        plt.show()
+    
