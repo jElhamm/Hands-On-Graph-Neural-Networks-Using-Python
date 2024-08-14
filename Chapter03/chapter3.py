@@ -206,3 +206,19 @@ plt.scatter(tsne_result[:, 0], tsne_result[:, 1], s=100, c=karate_labels, cmap="
 plt.title("TSNE Visualization")
 plt.show()
     
+
+# -------------------------------------------------------------------------  Define train and test masks ----------------------------------------------------------------------------------- 
+
+train_mask = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
+test_mask = [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+nodes_wv = np.array([walks_embedding_model.model.wv.get_vector(str(i)) for i in range(len(walks_embedding_model.model.wv))])       # Convert node embeddings and labels to numpy arrays
+karate_labels = np.array(karate_labels)
+
+
+# ------------------------------------------------ Train a RandomForestClassifier on the training nodes and evaluate on test nodes ----------------------------------------------------------
+
+clf = RandomForestClassifier(random_state=0)
+clf.fit(nodes_wv[train_mask], karate_labels[train_mask])
+y_pred = clf.predict(nodes_wv[test_mask])
+acc = accuracy_score(karate_labels[test_mask], y_pred)                                                                             # Calculate and print the accuracy of the classifier
+print(f'\nAccuracy = {acc*100:.2f}%')
