@@ -114,3 +114,15 @@ class Node2VecModel:
         model.train(walks, total_examples=model.corpus_count, epochs=epochs, report_delay=1)
         return model
     
+class Classifier:
+    def __init__(self, model):
+        self.model = model
+
+    def train_and_evaluate(self, labels, train_mask, test_mask):
+        clf = RandomForestClassifier(random_state=0)
+        clf.fit(self.model.wv[train_mask], labels[train_mask])
+
+        y_pred = clf.predict(self.model.wv[test_mask])
+        acc = accuracy_score(y_pred, labels[test_mask])
+        print(f'Node2Vec accuracy = {acc*100:.2f}%')
+    
