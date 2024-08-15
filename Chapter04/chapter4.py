@@ -102,3 +102,15 @@ class Node2VecModel:
                 walks.append(walker.generate_walk(node, walk_length))
         return walks
     
+    def train(self, walks, vector_size=100, window=10, workers=2, epochs=30, seed=0):
+        model = Word2Vec(walks,
+                         hs=1,
+                         sg=1,
+                         vector_size=vector_size,
+                         window=window,
+                         workers=workers,
+                         min_count=1,
+                         seed=seed)
+        model.train(walks, total_examples=model.corpus_count, epochs=epochs, report_delay=1)
+        return model
+    
