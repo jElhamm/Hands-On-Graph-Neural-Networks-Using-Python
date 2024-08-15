@@ -90,3 +90,15 @@ class RandomWalk:
             walk.append(next_node)
         return walk
     
+class Node2VecModel:
+    def __init__(self, graph):
+        self.graph = graph
+
+    def create_walks(self, num_walks=80, walk_length=10, p=3, q=2):
+        walker = RandomWalk(self.graph, p, q)
+        walks = []
+        for node in self.graph.nodes:
+            for _ in range(num_walks):
+                walks.append(walker.generate_walk(node, walk_length))
+        return walks
+    
