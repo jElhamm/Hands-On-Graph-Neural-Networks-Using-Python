@@ -61,3 +61,32 @@ class GraphVisualization:
                          font_color='white')
         plt.show()
     
+class RandomWalk:
+    def __init__(self, graph, p=1, q=1):
+        self.graph = graph
+        self.p = p
+        self.q = q
+
+    def next_node(self, previous, current):
+        neighbors = list(self.graph.neighbors(current))
+        alphas = []
+        for neighbor in neighbors:
+            if neighbor == previous:
+                alpha = 1/self.p
+            elif self.graph.has_edge(neighbor, previous):
+                alpha = 1
+            else:
+                alpha = 1/self.q
+            alphas.append(alpha)
+        probs = [alpha / sum(alphas) for alpha in alphas]
+        return np.random.choice(neighbors, size=1, p=probs)[0]
+
+    def generate_walk(self, start, length):
+        walk = [start]
+        for i in range(length):
+            current = walk[-1]
+            previous = walk[-2] if len(walk) > 1 else None
+            next_node = self.next_node(previous, current)
+            walk.append(next_node)
+        return walk
+    
