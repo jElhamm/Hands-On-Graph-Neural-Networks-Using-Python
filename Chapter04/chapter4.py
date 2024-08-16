@@ -143,3 +143,23 @@ class MovieLensGraph:
     def filter_high_ratings(ratings, threshold=4):
         return ratings[ratings.rating >= threshold]
     
+    @staticmethod
+    def create_graph_from_ratings(ratings, threshold=20):
+        pairs = defaultdict(int)
+        for group in ratings.groupby("user_id"):
+            user_movies = list(group[1]["movie_id"])
+            for i in range(len(user_movies)):
+                for j in range(i+1, len(user_movies)):
+                    pairs[(user_movies[i], user_movies[j])] += 1
+
+        G = nx.Graph()
+        for pair in pairs:
+            movie1, movie2 = pair
+            score = pairs[pair]
+            if score >= threshold:
+                G.add_edge(movie1, movie2, weight=score)
+
+        print("Total number of graph nodes:", G.number_of_nodes())
+        print("Total number of graph edges:", G.number_of_edges())
+        return G
+    
