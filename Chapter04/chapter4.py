@@ -196,3 +196,28 @@ test_mask = [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 26, 27, 28, 29, 3
 classifier = Classifier(model)
 classifier.train_and_evaluate(labels, train_mask, test_mask)
     
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ratings = pd.read_csv('ml-100k/u.data', sep='\t', names=['user_id', 'movie_id', 'rating', 'unix_timestamp'])
+ratings
+
+movies = pd.read_csv('ml-100k/u.item', sep='|', usecols=range(2), names=['movie_id', 'title'], encoding='latin-1')
+movies
+
+ratings = ratings[ratings.rating >= 4]
+ratings
+
+
+# ------------------------------------------------------------------ MovieLens Recommender ---------------------------------------------------------------------
+
+ml = MovieLensGraph()
+ml.download_and_extract('https://files.grouplens.org/datasets/movielens/ml-100k.zip')
+ratings, movies = ml.load_data()
+filtered_ratings = ml.filter_high_ratings(ratings)
+G = ml.create_graph_from_ratings(filtered_ratings)
+node2vec = Node2Vec(G, dimensions=64, walk_length=20, num_walks=200, p=2, q=1, workers=1)
+model = node2vec.fit(window=10, min_count=1, batch_words=4)
+
+recommender = MovieRecommender(model, movies)
+recommender.recommend('Star Wars (1977)')
