@@ -37,3 +37,29 @@ class SeedInitializer:
 # Initialize seed
 SeedInitializer.initialize_seed()
     
+
+# --------------------------------------------------------------- Load and analyze datasets ---------------------------------------------------------------------------
+
+class DatasetLoader:
+    def __init__(self, dataset_name="Cora", root="."):
+        if dataset_name == "Cora":
+            self.dataset = Planetoid(root=root, name=dataset_name)
+        elif dataset_name == "FacebookPagePage":
+            self.dataset = FacebookPagePage(root=root)
+        self.data = self.dataset[0]
+
+    def print_dataset_info(self):
+        print(f'Dataset: {self.dataset}')
+        print('---------------')
+        print(f'Number of graphs: {len(self.dataset)}')
+        print(f'Number of nodes: {self.data.x.shape[0]}')
+        print(f'Number of features: {self.dataset.num_features}')
+        print(f'Number of classes: {self.dataset.num_classes}')
+
+    def print_graph_info(self):
+        print(f'\nGraph:')
+        print('------')
+        print(f'Edges are directed: {self.data.is_directed()}')
+        print(f'Graph has isolated nodes: {self.data.has_isolated_nodes()}')
+        print(f'Graph has loops: {self.data.has_self_loops()}')
+    
