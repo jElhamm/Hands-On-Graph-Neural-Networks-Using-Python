@@ -126,3 +126,20 @@ class Classifier:
         acc = accuracy_score(y_pred, labels[test_mask])
         print(f'Node2Vec accuracy = {acc*100:.2f}%')
     
+class MovieLensGraph:
+    @staticmethod
+    def download_and_extract(url, extract_to='.'):
+        with urlopen(url) as zurl:
+            with ZipFile(BytesIO(zurl.read())) as zfile:
+                zfile.extractall(extract_to)
+
+    @staticmethod
+    def load_data():
+        ratings = pd.read_csv('ml-100k/u.data', sep='\t', names=['user_id', 'movie_id', 'rating', 'unix_timestamp'])
+        movies = pd.read_csv('ml-100k/u.item', sep='|', usecols=range(2), names=['movie_id', 'title'], encoding='latin-1')
+        return ratings, movies
+
+    @staticmethod
+    def filter_high_ratings(ratings, threshold=4):
+        return ratings[ratings.rating >= threshold]
+    
