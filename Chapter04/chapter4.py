@@ -174,3 +174,25 @@ class MovieRecommender:
             title = self.movies[self.movies.movie_id == int(id)].title.values[0]
             print(f'{title}: {similarity:.2f}')
     
+
+# -------------------------------------------------------------------- Graph Visualization --------------------------------------------------------------------
+            
+gv = GraphVisualization()
+G = gv.create_graph()
+gv.plot_graph(G)
+
+
+# ----------------------------------------------------------------- Random Walk and Node2Vec -------------------------------------------------------------------
+
+G = nx.karate_club_graph()
+rw = RandomWalk(G, p=1, q=1)
+n2v_model = Node2VecModel(G)
+walks = n2v_model.create_walks()
+model = n2v_model.train(walks)
+
+labels = np.array([1 if G.nodes[node]['club'] == 'Officer' else 0 for node in G.nodes])
+train_mask = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
+test_mask = [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+classifier = Classifier(model)
+classifier.train_and_evaluate(labels, train_mask, test_mask)
+    
