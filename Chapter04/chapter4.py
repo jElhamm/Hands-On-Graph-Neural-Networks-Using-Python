@@ -163,3 +163,14 @@ class MovieLensGraph:
         print("Total number of graph edges:", G.number_of_edges())
         return G
     
+class MovieRecommender:
+    def __init__(self, model, movies):
+        self.model = model
+        self.movies = movies
+
+    def recommend(self, movie_title):
+        movie_id = str(self.movies[self.movies.title == movie_title].movie_id.values[0])
+        for id, similarity in self.model.wv.most_similar(movie_id)[:5]:
+            title = self.movies[self.movies.movie_id == int(id)].title.values[0]
+            print(f'{title}: {similarity:.2f}')
+    
