@@ -63,3 +63,30 @@ class DatasetLoader:
         print(f'Graph has isolated nodes: {self.data.has_isolated_nodes()}')
         print(f'Graph has loops: {self.data.has_self_loops()}')
     
+
+# ------------------------------------------------------------------ Define MLP model ------------------------------------------------------------------------------
+        
+class MLP(torch.nn.Module): 
+    def __init__(self, dim_in, dim_h, dim_out):
+        super().__init__()
+        self.linear1 = Linear(dim_in, dim_h)
+        self.linear2 = Linear(dim_h, dim_out)
+
+    def forward(self, x):
+        x = self.linear1(x)
+        x = torch.relu(x)
+        x = self.linear2(x)
+        return F.log_softmax(x, dim=1)
+
+
+    @torch.no_grad()
+    def test(self, data):
+        self.eval()
+        out = self(data.x)
+        acc = self.accuracy(out.argmax(dim=1)[data.test_mask], data.y[data.test_mask])
+        return acc
+
+    @staticmethod
+    def accuracy(y_pred, y_true):
+        return torch.sum(y_pred == y_true).item() / len(y_true)
+    
