@@ -122,3 +122,25 @@ class VanillaGNNLayer(torch.nn.Module):
         x = torch.sparse.mm(adjacency, x)
         return x
     
+
+# ----------------------------------------------- VanillaGNN model with two GNN layers for node classification------------------------------------------------------
+    
+class VanillaGNN(torch.nn.Module):
+    def __init__(self, dim_in, dim_h, dim_out):
+        super().__init__()
+        self.gnn1 = VanillaGNNLayer(dim_in, dim_h)
+        self.gnn2 = VanillaGNNLayer(dim_h, dim_out)
+
+    def forward(self, x, adjacency):
+        h = self.gnn1(x, adjacency)
+        h = torch.relu(h)
+        h = self.gnn2(h, adjacency)
+        return F.log_softmax(h, dim=1)
+    
+    @torch.no_grad()
+    def test(self, data, adjacency):
+        self.eval()
+        out = self(data.x, adjacency)
+        acc = MLP.accuracy(out.argmax(dim=1)[data.test_mask], data.y[data.test_mask])
+        return acc
+    
