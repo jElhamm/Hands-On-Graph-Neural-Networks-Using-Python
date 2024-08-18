@@ -89,7 +89,7 @@ class MLP(torch.nn.Module):
             acc = self.accuracy(out[data.train_mask].argmax(dim=1), data.y[data.train_mask])
             loss.backward()
             optimizer.step()
-            
+
             if epoch % 20 == 0:
                 val_loss = criterion(out[data.val_mask], data.y[data.val_mask])
                 val_acc = self.accuracy(out[data.val_mask].argmax(dim=1), data.y[data.val_mask])
@@ -107,4 +107,18 @@ class MLP(torch.nn.Module):
     @staticmethod
     def accuracy(y_pred, y_true):
         return torch.sum(y_pred == y_true).item() / len(y_true)
+    
+
+
+# ------------------------------------------------------------- Define Vanilla GNN layer and model -----------------------------------------------------------------
+    
+class VanillaGNNLayer(torch.nn.Module):
+    def __init__(self, dim_in, dim_out):
+        super().__init__()
+        self.linear = Linear(dim_in, dim_out, bias=False)
+
+    def forward(self, x, adjacency):
+        x = self.linear(x)
+        x = torch.sparse.mm(adjacency, x)
+        return x
     
