@@ -174,3 +174,16 @@ class GraphUtils:
         adjacency += torch.eye(len(adjacency))
         return adjacency
     
+
+# ------------------------------------------------------------- Load and analyze Cora dataset ----------------------------------------------------------------------
+    
+cora_loader = DatasetLoader("Cora")
+cora_loader.print_dataset_info()
+cora_loader.print_graph_info()
+
+# -------------------------------------------------------------- Convert data to DataFrame -------------------------------------------------------------------------
+
+df_x = pd.DataFrame(cora_loader.data.x.numpy())
+df_x['label'] = pd.DataFrame(cora_loader.data.y)
+print(df_x.head())
+     
