@@ -156,11 +156,21 @@ class VanillaGNN(torch.nn.Module):
                 print(f'Epoch {epoch:>3} | Train Loss: {loss:.3f} | Train Acc:'
                       f' {acc*100:>5.2f}% | Val Loss: {val_loss:.2f} | '
                       f'Val Acc: {val_acc*100:.2f}%')
-                      
+
     @torch.no_grad()
     def test(self, data, adjacency):
         self.eval()
         out = self(data.x, adjacency)
         acc = MLP.accuracy(out.argmax(dim=1)[data.test_mask], data.y[data.test_mask])
         return acc
+    
+
+# ------------------------------------------------------ Utility function for creating adjacency matrix -------------------------------------------------------------
+    
+class GraphUtils:
+    @staticmethod
+    def create_adjacency_matrix(data):
+        adjacency = to_dense_adj(data.edge_index)[0]
+        adjacency += torch.eye(len(adjacency))
+        return adjacency
     
