@@ -187,3 +187,21 @@ df_x = pd.DataFrame(cora_loader.data.x.numpy())
 df_x['label'] = pd.DataFrame(cora_loader.data.y)
 print(df_x.head())
      
+
+# ---------------------------------------------------------------------- MLP model ---------------------------------------------------------------------------------
+
+mlp = MLP(cora_loader.dataset.num_features, 16, cora_loader.dataset.num_classes)
+print(mlp)
+mlp.fit(cora_loader.data, epochs=100)
+acc = mlp.test(cora_loader.data)
+print(f'\nMLP test accuracy: {acc*100:.2f}%')
+
+# ------------------------------------------------------------------- Vanilla GNN model ----------------------------------------------------------------------------
+
+adjacency = GraphUtils.create_adjacency_matrix(cora_loader.data)
+gnn = VanillaGNN(cora_loader.dataset.num_features, 16, cora_loader.dataset.num_classes)
+print(gnn)
+gnn.fit(cora_loader.data, adjacency, epochs=100)
+acc = gnn.test(cora_loader.data, adjacency)
+print(f'\nGNN test accuracy: {acc*100:.2f}%')
+    
