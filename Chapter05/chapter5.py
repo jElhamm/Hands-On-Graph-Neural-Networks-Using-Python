@@ -205,3 +205,20 @@ gnn.fit(cora_loader.data, adjacency, epochs=100)
 acc = gnn.test(cora_loader.data, adjacency)
 print(f'\nGNN test accuracy: {acc*100:.2f}%')
     
+
+# ------------------------------------------------------ Load and analyze FacebookPagePage dataset -----------------------------------------------------------------
+
+facebook_loader = DatasetLoader("FacebookPagePage")
+facebook_loader.print_dataset_info()
+facebook_loader.print_graph_info()
+
+# ----------------------------------------------------- Create masks for FacebookPagePage dataset ------------------------------------------------------------------
+
+facebook_loader.data.train_mask = range(18000)
+facebook_loader.data.val_mask = range(18001, 20000)
+facebook_loader.data.test_mask = range(20001, 22470)
+
+# ---------------------------------------------------------------------- Adjacency matrix --------------------------------------------------------------------------
+
+adjacency = GraphUtils.create_adjacency_matrix(facebook_loader.data)
+    
