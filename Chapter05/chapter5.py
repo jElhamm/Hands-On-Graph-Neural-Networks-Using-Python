@@ -222,3 +222,19 @@ facebook_loader.data.test_mask = range(20001, 22470)
 
 adjacency = GraphUtils.create_adjacency_matrix(facebook_loader.data)
     
+
+# ------------------------------------------------------------------ MLP on FacebookPagePage -----------------------------------------------------------------------
+
+mlp = MLP(facebook_loader.dataset.num_features, 16, facebook_loader.dataset.num_classes)
+print(mlp)
+mlp.fit(facebook_loader.data, epochs=100)
+acc = mlp.test(facebook_loader.data)
+print(f'\nMLP test accuracy: {acc*100:.2f}%\n')
+
+# ----------------------------------------------------------------- GCN on FacebookPagePage -----------------------------------------------------------------------
+
+gnn = VanillaGNN(facebook_loader.dataset.num_features, 16, facebook_loader.dataset.num_classes)
+print(gnn)
+gnn.fit(facebook_loader.data, adjacency, epochs=100)
+acc = gnn.test(facebook_loader.data, adjacency)
+print(f'\nGNN test accuracy: {acc*100:.2f}%')
