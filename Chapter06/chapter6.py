@@ -106,3 +106,25 @@ class DatasetVisualizer:
         plt.bar(numbers.keys(), numbers.values())
         plt.show()
     
+
+# -------------------------------------------------------------- Graph Convolutional Network Class -------------------------------------------------------------
+        
+class GCN(torch.nn.Module):
+    def __init__(self, dim_in, dim_h, dim_out):
+        super().__init__()
+        self.gcn1 = GCNConv(dim_in, dim_h)
+        self.gcn2 = GCNConv(dim_h, dim_out)
+
+    def forward(self, x, edge_index):
+        h = self.gcn1(x, edge_index)
+        h = torch.relu(h)
+        h = self.gcn2(h, edge_index)
+        return F.log_softmax(h, dim=1)
+
+    @torch.no_grad()
+    def test(self, data):
+        self.eval()
+        out = self(data.x, data.edge_index)
+        acc = (out.argmax(dim=1)[data.test_mask] == data.y[data.test_mask].long()).float().mean()
+        return acc
+    
