@@ -145,3 +145,26 @@ class GCN(torch.nn.Module):
         acc = (out.argmax(dim=1)[data.test_mask] == data.y[data.test_mask].long()).float().mean()
         return acc
     
+
+# --------------------------------------------------------------- Extended GCN for Regression --------------------------------------------------------------------
+    
+class GCNRegressor(torch.nn.Module):
+    def __init__(self, dim_in, dim_h, dim_out):
+        super().__init__()
+        self.gcn1 = GCNConv(dim_in, dim_h * 4)
+        self.gcn2 = GCNConv(dim_h * 4, dim_h * 2)
+        self.gcn3 = GCNConv(dim_h * 2, dim_h)
+        self.linear = torch.nn.Linear(dim_h, dim_out)
+
+    def forward(self, x, edge_index):
+        h = self.gcn1(x, edge_index)
+        h = torch.relu(h)
+        h = F.dropout(h, p=0.5, training=self.training)
+        h = self.gcn2(h, edge_index)
+        h = torch.relu(h)
+        h = F.dropout(h, p=0.5, training=self.training)
+        h = self.gcn3(h, edge_index)
+        h = torch.relu(h)
+        h = self.linear(h)
+        return h
+    
