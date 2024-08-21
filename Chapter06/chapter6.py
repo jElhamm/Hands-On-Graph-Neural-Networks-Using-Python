@@ -186,3 +186,33 @@ class GCNRegressor(torch.nn.Module):
         out = self(data.x, data.edge_index)
         return F.mse_loss(out.squeeze()[data.test_mask], data.y[data.test_mask].float())
     
+
+# ---------------------------------------------------------------------- Utilities Class -------------------------------------------------------------------------
+    
+class Utils:
+    @staticmethod
+    def load_wikipedia_data():
+        url = 'https://snap.stanford.edu/data/wikipedia.zip'
+        with urlopen(url) as zurl:
+            with ZipFile(BytesIO(zurl.read())) as zfile:
+                zfile.extractall('.')
+        df = pd.read_csv('wikipedia/chameleon/musae_chameleon_target.csv')
+        values = np.log10(df['target'])
+        return torch.tensor(values)
+
+    @staticmethod
+    def plot_degree_distribution(data):
+        degrees = degree(data.edge_index[0]).numpy()
+        numbers = Counter(degrees)
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Node degree')
+        ax.set_ylabel('Number of nodes')
+        plt.bar(numbers.keys(), numbers.values())
+        plt.show()
+
+    @staticmethod
+    def plot_target_distribution(df, values):
+        df['target'] = values
+        fig = sns.histplot(df['target'], kde=True, stat='density', linewidth=0)
+        plt.show()
+    
