@@ -72,3 +72,37 @@ class LinearAlgebraOperations:
         print()
         print(A @ np.linalg.inv(D + np.identity(4)))
     
+
+# -------------------------------------------------------------- Dataset and Data Visualization ---------------------------------------------------------------
+        
+class DatasetVisualizer:
+    @staticmethod
+    def visualize_planetoid():
+        dataset = Planetoid(root=".", name="Cora")
+        data = dataset[0]
+        degrees = degree(data.edge_index[0]).numpy()
+        numbers = Counter(degrees)
+
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Node degree')
+        ax.set_ylabel('Number of nodes')
+        plt.bar(numbers.keys(), numbers.values())
+        plt.show()
+
+    @staticmethod
+    def visualize_facebook_page():
+        dataset = FacebookPagePage(root=".")
+        data = dataset[0]
+        data.train_mask = range(18000)
+        data.val_mask = range(18001, 20000)
+        data.test_mask = range(20001, 22470)
+
+        degrees = degree(data.edge_index[0]).numpy()
+        numbers = Counter(degrees)
+
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Node degree')
+        ax.set_ylabel('Number of nodes')
+        plt.bar(numbers.keys(), numbers.values())
+        plt.show()
+    
