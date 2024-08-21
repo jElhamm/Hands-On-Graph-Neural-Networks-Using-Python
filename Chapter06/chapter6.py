@@ -33,3 +33,16 @@ from torch_geometric.transforms import RandomNodeSplit
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from torch_geometric.datasets import Planetoid, FacebookPagePage, WikipediaNetwork
     
+
+# --------------------------------------------------------- Set random seeds for reproducibility ----------------------------------------------------------------
+
+class SeedSetter:
+    @staticmethod
+    def set_seeds(seed=1):
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        np.random.seed(seed)
+    
