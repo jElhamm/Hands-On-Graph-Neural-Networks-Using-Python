@@ -168,3 +168,21 @@ class GCNRegressor(torch.nn.Module):
         h = self.linear(h)
         return h
     
+    def fit(self, data, epochs):
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.02, weight_decay=5e-4)
+        self.train()
+        for epoch in range(epochs + 1):
+            optimizer.zero_grad()
+            out = self(data.x, data.edge_index)
+            loss = F.mse_loss(out.squeeze()[data.train_mask], data.y[data.train_mask].float())
+            loss.backward()
+            optimizer.step()
+            if epoch % 20 == 0:
+                val_loss = F.mse_loss(out.squeeze()[data.val_mask], data.y[data.val_mask])
+                print(f"Epoch {epoch:>3} | Train Loss: {loss:.5f} | Val Loss: {val_loss:.5f}")
+
+    def test(self, data):
+        self.eval()
+        out = self(data.x, data.edge_index)
+        return F.mse_loss(out.squeeze()[data.test_mask], data.y[data.test_mask].float())
+    
