@@ -46,3 +46,29 @@ class SeedSetter:
         torch.backends.cudnn.benchmark = False
         np.random.seed(seed)
     
+
+# ---------------------------------------------------------------- Linear Algebra Operations --------------------------------------------------------------------
+        
+class LinearAlgebraOperations:
+    @staticmethod
+    def inverse_operations():
+        D = np.array([
+            [3, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 2, 0],
+            [0, 0, 0, 2]
+        ])
+        print(np.linalg.inv(D))
+        print(np.linalg.inv(D + np.identity(4)))
+
+        A = np.array([
+            [1, 1, 1, 1],
+            [1, 1, 0, 0],
+            [1, 0, 1, 1],
+            [1, 0, 1, 1]
+        ])
+
+        print(np.linalg.inv(D + np.identity(4)) @ A)
+        print()
+        print(A @ np.linalg.inv(D + np.identity(4)))
+    
