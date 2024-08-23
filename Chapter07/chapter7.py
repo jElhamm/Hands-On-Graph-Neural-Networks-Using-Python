@@ -31,3 +31,14 @@ from torch_geometric.nn import GATv2Conv
 from torch_geometric.utils import degree
 from torch_geometric.datasets import Planetoid
     
+
+class SeedSetter:
+    @staticmethod
+    def set_seeds(seed=1):
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        np.random.seed(seed)
+    
