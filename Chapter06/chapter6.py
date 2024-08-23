@@ -216,3 +216,21 @@ class Utils:
         fig = sns.histplot(df['target'], kde=True, stat='density', linewidth=0)
         plt.show()
     
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+SeedSetter.set_seeds()                                                                              # Set seeds
+LinearAlgebraOperations.inverse_operations()                                                        # Linear Algebra Operations
+DatasetVisualizer.visualize_planetoid()                                                             # Planetoid Dataset Visualization
+DatasetVisualizer.visualize_facebook_page()                                                         # Facebook Page Dataset Visualization
+dataset = Planetoid(root=".", name="Cora")                                                          # Load Planetoid Dataset
+data = dataset[0]
+
+# ------------------------------------------------------------------ Create and Train GCN Model ----------------------------------------------------------------
+
+gcn_classification = GCN(dataset.num_features, 16, dataset.num_classes)
+print(gcn_classification)
+gcn_classification.fit(data, epochs=100)
+acc = gcn_classification.test(data)
+print(f'\nGCN test accuracy: {acc*100:.2f}%\n')
+    
