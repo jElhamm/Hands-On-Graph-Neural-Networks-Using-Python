@@ -42,3 +42,26 @@ class SeedSetter:
         torch.backends.cudnn.benchmark = False
         np.random.seed(seed)
     
+class GraphOperations:
+    @staticmethod
+    def graph_convolution(A, X, W, W_att):
+        connections = np.where(A > 0)
+        concat = np.concatenate([(X @ W.T)[connections[0]], (X @ W.T)[connections[1]]], axis=1)
+        a = W_att @ concat.T
+        e = GraphOperations.leaky_relu(a)
+        E = np.zeros(A.shape)
+        E[connections[0], connections[1]] = e[0]
+        W_alpha = GraphOperations.softmax2D(E, 1)
+        H = A.T @ W_alpha @ X @ W.T
+        return H
+
+    @staticmethod
+    def leaky_relu(x, alpha=0.2):
+        return np.maximum(alpha * x, x)
+
+    @staticmethod
+    def softmax2D(x, axis):
+        e = np.exp(x - np.expand_dims(np.max(x, axis=axis), axis))
+        sum = np.expand_dims(np.sum(e, axis=axis), axis)
+        return e / sum
+    
