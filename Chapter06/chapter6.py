@@ -279,3 +279,27 @@ df = pd.read_csv('wikipedia/chameleon/musae_chameleon_target.csv')
 values = np.log10(df['target'])
 Utils.plot_target_distribution(df, values)
     
+
+# ------------------------------------------------------------- Create and Train GCN Regressor Model ------------------------------------------------------------
+
+gcn_regressor = GCNRegressor(dataset.num_features, 128, 1)
+print(gcn_regressor)
+gcn_regressor.fit(data, epochs=200)
+loss = gcn_regressor.test(data)
+print(f'\nGCN test loss: {loss:.5f}\n')
+
+# ---------------------------------------------------------------------- Compute Metrics ------------------------------------------------------------------------
+
+out = gcn_regressor(data.x, data.edge_index)
+y_pred = out.squeeze()[data.test_mask].detach().numpy()
+mse = mean_squared_error(data.y[data.test_mask], y_pred)
+mae = mean_absolute_error(data.y[data.test_mask], y_pred)
+print('=' * 43)
+print(f'MSE = {mse:.4f} | RMSE = {np.sqrt(mse):.4f} | MAE = {mae:.4f}')
+print('=' * 43)
+
+# --------------------------------------------------------------------- Plot Regression Results ------------------------------------------------------------------
+
+fig = sns.regplot(x=data.y[data.test_mask].numpy(), y=y_pred)
+fig.set(xlabel='Ground truth', ylabel='Predicted values')
+plt.show()
