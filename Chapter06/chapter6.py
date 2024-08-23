@@ -234,3 +234,20 @@ gcn_classification.fit(data, epochs=100)
 acc = gcn_classification.test(data)
 print(f'\nGCN test accuracy: {acc*100:.2f}%\n')
     
+
+# ---------------------------------------------------------------- Load Facebook Page-Page Dataset --------------------------------------------------------------
+
+dataset = FacebookPagePage(root=".")
+data = dataset[0]
+data.train_mask = range(18000)
+data.val_mask = range(18001, 20000)
+data.test_mask = range(20001, 22470)
+
+# -------------------------------------------------------------- Train GCN Model on Facebook Dataset ------------------------------------------------------------
+
+gcn_classification = GCN(dataset.num_features, 16, dataset.num_classes)
+print(gcn_classification)
+gcn_classification.fit(data, epochs=100)
+acc = gcn_classification.test(data)
+print(f'\nGCN test accuracy: {acc*100:.2f}%\n')
+    
