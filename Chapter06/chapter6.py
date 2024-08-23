@@ -251,3 +251,31 @@ gcn_classification.fit(data, epochs=100)
 acc = gcn_classification.test(data)
 print(f'\nGCN test accuracy: {acc*100:.2f}%\n')
     
+
+# -----------------------------------------------------------------Load Wikipedia Network Dataset ---------------------------------------------------------------
+
+dataset = WikipediaNetwork(root=".", name="chameleon", transform=RandomNodeSplit(num_val=200, num_test=500))
+data = dataset[0]
+data.y = Utils.load_wikipedia_data()
+
+# -------------------------------------------------------------- Print Dataset and Graph Information ------------------------------------------------------------
+
+print(f'Dataset: {dataset}')
+print('-------------------')
+print(f'Number of graphs: {len(dataset)}')
+print(f'Number of nodes: {data.x.shape[0]}')
+print(f'Number of unique features: {dataset.num_features}')
+print(f'Number of classes: {dataset.num_classes}')
+print(f'\nGraph:')
+print('------')
+print(f'Edges are directed: {data.is_directed()}')
+print(f'Graph has isolated nodes: {data.has_isolated_nodes()}')
+print(f'Graph has loops: {data.has_self_loops()}')
+
+# -------------------------------------------------------- Plot Degree Distribution and Target Distribution -----------------------------------------------------
+
+Utils.plot_degree_distribution(data)
+df = pd.read_csv('wikipedia/chameleon/musae_chameleon_target.csv')
+values = np.log10(df['target'])
+Utils.plot_target_distribution(df, values)
+    
