@@ -81,6 +81,23 @@ class GAT(torch.nn.Module):
         h = self.gat2(h, edge_index)
         return F.log_softmax(h, dim=1)
 
+    def fit(self, data, epochs):
+        criterion = torch.nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.01)
+        self.train()
+        for epoch in range(epochs + 1):
+            optimizer.zero_grad()
+            out = self(data.x, data.edge_index)
+            loss = criterion(out[data.train_mask], data.y[data.train_mask])
+            acc = self.accuracy(out[data.train_mask].argmax(dim=1), data.y[data.train_mask])
+            loss.backward()
+            optimizer.step()
+
+            if epoch % 20 == 0:
+                val_loss = criterion(out[data.val_mask], data.y[data.val_mask])
+                val_acc = self.accuracy(out[data.val_mask].argmax(dim=1), data.y[data.val_mask])
+                print(f'Epoch {epoch:>3} | Train Loss: {loss:.3f} | Train Acc: {acc*100:>5.2f}% | Val Loss: {val_loss:.2f} | Val Acc: {val_acc*100:.2f}%')
+    
     @torch.no_grad()
     def test(self, data):
         self.eval()
