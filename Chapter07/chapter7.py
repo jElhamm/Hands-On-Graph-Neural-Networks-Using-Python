@@ -132,3 +132,24 @@ class DataVisualizer:
             plt.text(i, accuracies[i] // 2, sizes[i], ha='center', color='white')
         plt.show()
     
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+SeedSetter.set_seeds()                                                                                 # Set seeds
+dataset_cora = Planetoid(root=".", name="Cora")                                                        # Load Cora dataset
+data_cora = dataset_cora[0]
+
+# -------------------------------------------------------------- Graph Convolution Operation Example -----------------------------------------------------------
+
+A = np.array([
+    [1, 1, 1, 1],
+    [1, 1, 0, 0],
+    [1, 0, 1, 1],
+    [1, 0, 1, 1]
+  ])
+X = np.random.uniform(-1, 1, (4, 4))
+W = np.random.uniform(-1, 1, (2, 4))
+W_att = np.random.uniform(-1, 1, (1, 4))
+H = GraphOperations.graph_convolution(A, X, W, W_att)
+print("Graph Convolution Output:\n", H)
+    
