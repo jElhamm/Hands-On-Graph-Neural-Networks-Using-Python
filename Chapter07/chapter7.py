@@ -178,3 +178,21 @@ gat_citeseer.fit(data_citeseer, epochs=100)
 acc_citeseer = gat_citeseer.test(data_citeseer)
 print(f'GAT test accuracy on CiteSeer: {acc_citeseer*100:.2f}%')
     
+out = gat_citeseer(data_citeseer.x, data_citeseer.edge_index)                                           # Get model's classifications
+degrees = degree(data_citeseer.edge_index[0]).numpy()                                                   # Calculate the degree of each node
+accuracies = []                                                                                         # Store accuracy scores and sample sizes
+sizes = []
+
+# ------------------------------------------------------------- Accuracy for degrees between 0 and 5 ------------------------------------------------------------
+
+for i in range(0, 6):
+    mask = np.where(degrees == i)[0]
+    accuracies.append(gat_citeseer.accuracy(out.argmax(dim=1)[mask], data_citeseer.y[mask]))
+    sizes.append(len(mask))
+
+# --------------------------------------------------------- Accuracy for degrees > 5 ---------------------------------------------------------
+mask = np.where(degrees > 5)[0]
+accuracies.append(gat_citeseer.accuracy(out.argmax(dim=1)[mask], data_citeseer.y[mask]))
+sizes.append(len(mask))
+
+DataVisualizer.plot_accuracy_by_degree(degrees, accuracies, sizes)
