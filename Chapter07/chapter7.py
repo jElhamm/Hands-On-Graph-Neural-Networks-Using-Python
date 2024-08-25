@@ -153,3 +153,28 @@ W_att = np.random.uniform(-1, 1, (1, 4))
 H = GraphOperations.graph_convolution(A, X, W, W_att)
 print("Graph Convolution Output:\n", H)
     
+
+# --------------------------------------------------------- Create and Train GAT Model on Cora Dataset ---------------------------------------------------------
+
+gat_cora = GAT(dataset_cora.num_features, 32, dataset_cora.num_classes)
+print(gat_cora)
+gat_cora.fit(data_cora, epochs=100)
+acc_cora = gat_cora.test(data_cora)
+print(f'GAT test accuracy on Cora: {acc_cora*100:.2f}%')
+
+
+# ---------------------------------------------------- Load CiteSeer dataset and Plot Degree Distribution ------------------------------------------------------
+
+dataset_citeseer = Planetoid(root=".", name="CiteSeer")
+data_citeseer = dataset_citeseer[0]
+DataVisualizer.plot_degree_distribution(data_citeseer)
+
+
+# ------------------------------------------------------ Create and Train GAT Model on CiteSeer Dataset---------------------------------------------------------
+
+gat_citeseer = GAT(dataset_citeseer.num_features, 16, dataset_citeseer.num_classes)
+print(gat_citeseer)
+gat_citeseer.fit(data_citeseer, epochs=100)
+acc_citeseer = gat_citeseer.test(data_citeseer)
+print(f'GAT test accuracy on CiteSeer: {acc_citeseer*100:.2f}%')
+    
