@@ -109,3 +109,26 @@ class GAT(torch.nn.Module):
     def accuracy(y_pred, y_true):
         return torch.sum(y_pred == y_true) / len(y_true)
     
+class DataVisualizer:
+    @staticmethod
+    def plot_degree_distribution(data):
+        degrees = degree(data.edge_index[0]).numpy()
+        numbers = Counter(degrees)
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Node degree')
+        ax.set_ylabel('Number of nodes')
+        plt.bar(numbers.keys(), numbers.values())
+        plt.show()
+
+    @staticmethod
+    def plot_accuracy_by_degree(degrees, accuracies, sizes):
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Node degree')
+        ax.set_ylabel('Accuracy score')
+        plt.bar(['0', '1', '2', '3', '4', '5', '6+'], accuracies)
+        for i in range(0, 7):
+            plt.text(i, accuracies[i], f'{accuracies[i]*100:.2f}%', ha='center', color='black')
+        for i in range(0, 7):
+            plt.text(i, accuracies[i] // 2, sizes[i], ha='center', color='white')
+        plt.show()
+    
