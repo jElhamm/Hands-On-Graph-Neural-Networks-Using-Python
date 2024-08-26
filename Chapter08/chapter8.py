@@ -96,3 +96,28 @@ class GraphVisualizer:
                             )
         plt.show()
     
+#  -------------------------------------- class defines a GraphSAGE model using the SAGEConv layers from PyTorch Geometric -------------------------------------------
+
+class GraphSAGEModel(torch.nn.Module):
+    def __init__(self, dim_in, dim_h, dim_out):
+        super().__init__()
+        self.sage1 = SAGEConv(dim_in, dim_h)
+        self.sage2 = SAGEConv(dim_h, dim_out)
+
+    def forward(self, x, edge_index):
+        h = self.sage1(x, edge_index)
+        h = torch.relu(h)
+        h = F.dropout(h, p=0.5, training=self.training)
+        h = self.sage2(h, edge_index)
+        return h
+
+    @torch.no_grad()
+    def test(self, data):
+        self.eval()
+        out = self(data.x, data.edge_index)
+        acc = self.accuracy(out.argmax(dim=1)[data.test_mask], data.y[data.test_mask])
+        return acc
+
+    def accuracy(self, pred_y, y):
+        return ((pred_y == y).sum() / len(y)).item()
+    
