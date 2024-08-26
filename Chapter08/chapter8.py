@@ -44,3 +44,35 @@ class RandomSeedSetup:
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
     
+# ------------------------------------------------- class is designed to handle loading and managing graph datasets ----------------------------------------------------
+
+class GraphDataset:
+    def __init__(self, dataset_name):
+        self.dataset = Planetoid(root='.', name=dataset_name)
+        self.data = self.dataset[0]
+
+    def print_dataset_info(self):
+        print(f'Dataset: {self.dataset}')
+        print('-------------------')
+        print(f'Number of graphs: {len(self.dataset)}')
+        print(f'Number of nodes: {self.data.x.shape[0]}')
+        print(f'Number of features: {self.dataset.num_features}')
+        print(f'Number of classes: {self.dataset.num_classes}')
+
+        print(f'\nGraph:')
+        print('------')
+        print(f'Training nodes: {sum(self.data.train_mask).item()}')
+        print(f'Evaluation nodes: {sum(self.data.val_mask).item()}')
+        print(f'Test nodes: {sum(self.data.test_mask).item()}')
+        print(f'Edges are directed: {self.data.is_directed()}')
+        print(f'Graph has isolated nodes: {self.data.has_isolated_nodes()}')
+        print(f'Graph has loops: {self.data.has_self_loops()}')
+
+    def create_loader(self):
+        return NeighborLoader(
+            self.data,
+            num_neighbors=[5, 10],
+            batch_size=16,
+            input_nodes=self.data.train_mask,
+        )
+    
