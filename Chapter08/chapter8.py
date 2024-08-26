@@ -76,3 +76,23 @@ class GraphDataset:
             input_nodes=self.data.train_mask,
         )
     
+# -------------------------------------------------- class is used for visualizing subgraphs from a data loader --------------------------------------------------------
+
+class GraphVisualizer:
+    def __init__(self, train_loader):
+        self.train_loader = train_loader
+
+    def plot_subgraphs(self):
+        fig = plt.figure(figsize=(16,16))
+        for idx, (subdata, pos) in enumerate(zip(self.train_loader, [221, 222, 223, 224])):
+            G = to_networkx(subdata, to_undirected=True)
+            ax = fig.add_subplot(pos)
+            ax.set_title(f'Subgraph {idx}', fontsize=24)
+            plt.axis('off')
+            nx.draw_networkx(G,
+                            pos=nx.spring_layout(G, seed=0),
+                            with_labels=False,
+                            node_color=subdata.y,
+                            )
+        plt.show()
+    
