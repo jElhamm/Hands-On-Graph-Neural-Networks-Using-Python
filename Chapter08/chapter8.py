@@ -29,3 +29,18 @@ from torch_geometric.datasets import Planetoid, PPI
 from torch_geometric.loader import NeighborLoader, DataLoader
 from torch_geometric.nn import SAGEConv, GraphSAGE as PyGGraphSAGE
     
+
+# ---------------------------------------------------------------- Set random seeds for reproducibility ----------------------------------------------------------------
+
+class RandomSeedSetup:
+    def __init__(self, seed=0):
+        self.seed = seed
+        self.setup()
+
+    def setup(self):
+        torch.manual_seed(self.seed)
+        torch.cuda.manual_seed(self.seed)
+        torch.cuda.manual_seed_all(self.seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    
