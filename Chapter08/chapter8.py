@@ -171,3 +171,29 @@ class PPIDataLoader:
         self.val_loader = DataLoader(self.val_dataset, batch_size=2)
         self.test_loader = DataLoader(self.test_dataset, batch_size=2)
     
+# ---------------------------------------------- class handles the training and evaluation of the GraphSAGE model ----------------------------------------------------
+
+class GraphSAGETrainer:
+    def __init__(self, train_loader, val_loader, test_loader, device):
+        self.train_loader = train_loader
+        self.val_loader = val_loader
+        self.test_loader = test_loader
+        self.device = device
+        self.model = None
+        self.optimizer = None
+        self.criterion = None
+
+    def setup_model(self, in_channels, hidden_channels, out_channels):
+        self.model = PyGGraphSAGE(
+            in_channels=in_channels,
+            hidden_channels=hidden_channels,
+            num_layers=2,
+            out_channels=out_channels
+        ).to(self.device)
+        self.criterion = torch.nn.BCEWithLogitsLoss()
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.005)
+
+    def evaluate(self):
+        test_f1 = self.test(self.test_loader)
+        print(f'Test F1-score: {test_f1:.4f}')
+    
