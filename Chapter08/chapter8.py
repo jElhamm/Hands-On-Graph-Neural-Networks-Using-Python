@@ -111,6 +111,29 @@ class GraphSAGEModel(torch.nn.Module):
         h = self.sage2(h, edge_index)
         return h
 
+    def fit(self, loader, epochs):
+        criterion = torch.nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.01)
+        self.train()
+        for epoch in range(epochs+1):
+            total_loss = 0
+            acc = 0
+            val_loss = 0
+            val_acc = 0
+
+            for batch in loader:
+                optimizer.zero_grad()
+                out = self(batch.x, batch.edge_index)
+                loss = criterion(out[batch.train_mask], batch.y[batch.train_mask])
+                total_loss += loss.item()
+                acc += self.accuracy(out[batch.train_mask].argmax(dim=1), batch.y[batch.train_mask])
+                loss.backward()
+                optimizer.step()
+                val_loss += criterion(out[batch.val_mask], batch.y[batch.val_mask])
+                val_acc += self.accuracy(out[batch.val_mask].argmax(dim=1), batch.y[batch.val_mask])
+            if epoch % 20 == 0:
+                print(f'Epoch {epoch:>3} | Train Loss: {loss/len(loader):.3f} | Train Acc: {acc/len(loader)*100:>6.2f}% | Val Loss: {val_loss/len(loader):.2f} | Val Acc: {val_acc/len(loader)*100:.2f}%')
+    
     @torch.no_grad()
     def test(self, data):
         self.eval()
