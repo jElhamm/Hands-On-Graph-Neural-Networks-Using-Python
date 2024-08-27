@@ -193,6 +193,33 @@ class GraphSAGETrainer:
         self.criterion = torch.nn.BCEWithLogitsLoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.005)
 
+    def fit(self, epochs):
+        self.model.train()
+        total_loss = 0
+        for epoch in range(epochs+1):
+            epoch_loss = 0
+            for data in self.train_loader:
+                data = data.to(self.device)
+                self.optimizer.zero_grad()
+                out = self.model(data.x, data.edge_index)
+                loss = self.criterion(out, data.y)
+                epoch_loss += loss.item() * data.num_graphs
+                loss.backward()
+                self.optimizer.step()
+            total_loss = epoch_loss / len(self.train_loader.data)
+            val_f1 = self.test(self.val_loader)
+            if epoch % 50 == 0:
+                print(f'Epoch {epoch:>3} | Train Loss: {total_loss:.3f} | Val F1-score: {val_f1:.4f}')
+
+    @torch.no_grad()
+    def test(self, loader):
+        self.model.eval()
+        data = next(iter(loader))
+        out = self.model(data.x.to(self.device), data.edge_index.to(self.device))
+        preds = (out > 0).float().cpu()
+        y, pred = data.y.numpy(), preds.numpy()
+        return f1_score(y, pred, average='micro') if pred.sum() > 0 else 0
+    
     def evaluate(self):
         test_f1 = self.test(self.test_loader)
         print(f'Test F1-score: {test_f1:.4f}')
