@@ -144,3 +144,30 @@ class GraphSAGEModel(torch.nn.Module):
     def accuracy(self, pred_y, y):
         return ((pred_y == y).sum() / len(y)).item()
     
+# ----------------------------------------------- class is responsible for loading and preparing the PPI datasets ----------------------------------------------------
+
+class PPIDataLoader:
+    def __init__(self, batch_size=2048):
+        self.batch_size = batch_size
+        self.train_loader = None
+        self.val_loader = None
+        self.test_loader = None
+
+    def load_datasets(self):
+        self.train_dataset = PPI(root=".", split='train')
+        self.val_dataset = PPI(root=".", split='val')
+        self.test_dataset = PPI(root=".", split='test')
+
+    def create_loaders(self):
+        train_data = Batch.from_data_list(self.train_dataset)
+        self.train_loader = NeighborLoader(
+            train_data,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_neighbors=[20, 10],
+            num_workers=2,
+            persistent_workers=True
+        )
+        self.val_loader = DataLoader(self.val_dataset, batch_size=2)
+        self.test_loader = DataLoader(self.test_dataset, batch_size=2)
+    
