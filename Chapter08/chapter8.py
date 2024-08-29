@@ -245,4 +245,25 @@ acc = graphsage_model.test(dataset_handler.data)
 print(f'GraphSAGE test accuracy: {acc*100:.2f}%')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    
+
+# --------------------------------------------------------------------- Load and prepare datasets --------------------------------------------------------------------
+
+ppi_loader = PPIDataLoader()
+ppi_loader.load_datasets()
+ppi_loader.create_loaders()
+
+# ---------------------------------------------------------------- Initialize and train GraphSAGE model ---------------------------------------------------------------
+
+trainer = GraphSAGETrainer(
+    train_loader=ppi_loader.train_loader,
+    val_loader=ppi_loader.val_loader,
+    test_loader=ppi_loader.test_loader,
+    device=device
+)
+trainer.setup_model(
+    in_channels=ppi_loader.train_dataset.num_features,
+    hidden_channels=512,
+    out_channels=ppi_loader.train_dataset.num_classes
+)
+trainer.fit(epochs=300)
+trainer.evaluate()
