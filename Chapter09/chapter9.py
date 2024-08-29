@@ -71,3 +71,21 @@ class GraphDataset:
         self.val_loader = DataLoader(self.val_dataset, batch_size=batch_size, shuffle=True)
         self.test_loader = DataLoader(self.test_dataset, batch_size=batch_size, shuffle=True)
     
+# ---------------------------------------------------------- Graph Convolutional Network (GCN) model ----------------------------------------------------------
+        
+class GCN(torch.nn.Module):
+    def __init__(self, dim_h, num_features, num_classes):
+        super(GCN, self).__init__()
+        self.conv1 = GCNConv(num_features, dim_h)
+        self.conv2 = GCNConv(dim_h, dim_h)
+        self.conv3 = GCNConv(dim_h, dim_h)
+        self.lin = Linear(dim_h, num_classes)
+
+    def forward(self, x, edge_index, batch):
+        h = self.conv1(x, edge_index).relu()
+        h = self.conv2(h, edge_index).relu()
+        h = self.conv3(h, edge_index)
+        hG = global_mean_pool(h, batch)
+        h = F.dropout(hG, p=0.5, training=self.training)
+        return F.log_softmax(self.lin(h), dim=1)
+    
