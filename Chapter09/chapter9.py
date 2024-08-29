@@ -54,3 +54,20 @@ class GraphDataset:
         print(f'Number of features: {self.num_features}')
         print(f'Number of classes: {self.num_classes}')
     
+    def split_dataset(self):
+        total_size = len(self.dataset)
+        train_size = int(total_size * 0.8)
+        val_size = int(total_size * 0.1)
+        test_size = total_size - train_size - val_size
+        self.train_dataset = self.dataset[:train_size]
+        self.val_dataset = self.dataset[train_size:train_size + val_size]
+        self.test_dataset = self.dataset[train_size + val_size:]
+        print(f'Training set   = {len(self.train_dataset)} graphs')
+        print(f'Validation set = {len(self.val_dataset)} graphs')
+        print(f'Test set       = {len(self.test_dataset)} graphs')
+
+    def create_loaders(self, batch_size=64):
+        self.train_loader = DataLoader(self.train_dataset, batch_size=batch_size, shuffle=True)
+        self.val_loader = DataLoader(self.val_dataset, batch_size=batch_size, shuffle=True)
+        self.test_loader = DataLoader(self.test_dataset, batch_size=batch_size, shuffle=True)
+    
