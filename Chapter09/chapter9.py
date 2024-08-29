@@ -29,3 +29,28 @@ from torch_geometric.datasets import TUDataset
 from torch.nn import Linear, Sequential, BatchNorm1d, ReLU, Dropout
 from torch_geometric.nn import GCNConv, GINConv, global_mean_pool, global_add_pool
     
+
+# ----------------------------------------------------------------- Set up reproducibility --------------------------------------------------------------------
+
+torch.manual_seed(11)
+torch.cuda.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+# ------------------------------------------------- Handles the loading and preprocessing of the dataset ------------------------------------------------------
+
+class GraphDataset:
+    def __init__(self, dataset_name='PROTEINS', root='.'):
+        self.dataset = TUDataset(root=root, name=dataset_name).shuffle()
+        self.num_classes = self.dataset.num_classes
+        self.num_features = self.dataset.num_features
+
+    def print_dataset_info(self):
+        print(f'Dataset: {self.dataset}')
+        print('-----------------------')
+        print(f'Number of graphs: {len(self.dataset)}')
+        print(f'Number of nodes: {self.dataset[0].x.shape[0]}')
+        print(f'Number of features: {self.num_features}')
+        print(f'Number of classes: {self.num_classes}')
+    
