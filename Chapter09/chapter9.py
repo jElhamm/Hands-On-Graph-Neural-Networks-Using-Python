@@ -89,3 +89,38 @@ class GCN(torch.nn.Module):
         h = F.dropout(hG, p=0.5, training=self.training)
         return F.log_softmax(self.lin(h), dim=1)
     
+# ----------------------------------------------------------- Graph Isomorphism Network (GIN) model -----------------------------------------------------------
+    
+class GIN(torch.nn.Module):
+    def __init__(self, dim_h, num_features, num_classes):
+        super(GIN, self).__init__()
+        self.conv1 = GINConv(Sequential(Linear(num_features, dim_h),
+                                        BatchNorm1d(dim_h),
+                                        ReLU(),
+                                        Linear(dim_h, dim_h),
+                                        ReLU()))
+        self.conv2 = GINConv(Sequential(Linear(dim_h, dim_h),
+                                        BatchNorm1d(dim_h),
+                                        ReLU(),
+                                        Linear(dim_h, dim_h),
+                                        ReLU()))
+        self.conv3 = GINConv(Sequential(Linear(dim_h, dim_h),
+                                        BatchNorm1d(dim_h),
+                                        ReLU(),
+                                        Linear(dim_h, dim_h),
+                                        ReLU()))
+        self.lin1 = Linear(dim_h * 3, dim_h * 3)
+        self.lin2 = Linear(dim_h * 3, num_classes)
+
+    def forward(self, x, edge_index, batch):
+        h1 = self.conv1(x, edge_index)
+        h2 = self.conv2(h1, edge_index)
+        h3 = self.conv3(h2, edge_index)
+        h1 = global_add_pool(h1, batch)
+        h2 = global_add_pool(h2, batch)
+        h3 = global_add_pool(h3, batch)
+        h = torch.cat((h1, h2, h3), dim=1)
+        h = self.lin1(h).relu()
+        h = F.dropout(h, p=0.5, training=self.training)
+        return F.log_softmax(self.lin2(h), dim=1)
+    
