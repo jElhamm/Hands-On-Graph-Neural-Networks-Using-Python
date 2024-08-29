@@ -224,3 +224,25 @@ class GraphSAGETrainer:
         test_f1 = self.test(self.test_loader)
         print(f'Test F1-score: {test_f1:.4f}')
     
+# ------------------------------------------------------------------------------ Main Code ---------------------------------------------------------------------------
+
+seed_setup = RandomSeedSetup(seed=-1)                                                         # Setup random seeds
+dataset_handler = GraphDataset("Pubmed")                                                      # Load and print dataset information
+dataset_handler.print_dataset_info()
+train_loader = dataset_handler.create_loader()                                                # Create train loader
+
+# ------------------------------------------------------------------------- Visualize subgraphs ----------------------------------------------------------------------
+
+visualizer = GraphVisualizer(train_loader)
+visualizer.plot_subgraphs()
+
+# ------------------------------------------------------------------ Create and train GraphSAGE model ----------------------------------------------------------------
+
+graphsage_model = GraphSAGEModel(dataset_handler.dataset.num_features, 64, dataset_handler.dataset.num_classes)
+print(graphsage_model)
+graphsage_model.fit(train_loader, 200)
+acc = graphsage_model.test(dataset_handler.data)
+print(f'GraphSAGE test accuracy: {acc*100:.2f}%')
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
