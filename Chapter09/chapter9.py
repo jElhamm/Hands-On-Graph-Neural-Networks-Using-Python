@@ -124,3 +124,28 @@ class GIN(torch.nn.Module):
         h = F.dropout(h, p=0.5, training=self.training)
         return F.log_softmax(self.lin2(h), dim=1)
     
+# --------------------------------------------------------- Handles training and evaluation of models ---------------------------------------------------------
+    
+class Trainer:
+    def __init__(self, model, train_loader, val_loader, test_loader):
+        self.model = model
+        self.train_loader = train_loader
+        self.val_loader = val_loader
+        self.test_loader = test_loader
+        self.criterion = torch.nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+        self.epochs = 100
+
+    @torch.no_grad()
+    def evaluate(self, loader):
+        self.model.eval()
+        loss, acc = 0, 0
+        for data in loader:
+            out = self.model(data.x, data.edge_index, data.batch)
+            loss += self.criterion(out, data.y).item() / len(loader)
+            acc += self.accuracy(out.argmax(dim=1), data.y) / len(loader)
+        return loss, acc
+
+    def accuracy(self, pred_y, y):
+        return ((pred_y == y).sum() / len(y)).item()
+    
