@@ -136,6 +136,25 @@ class Trainer:
         self.optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
         self.epochs = 100
 
+    def train(self):
+        self.model.train()
+        for epoch in range(self.epochs + 1):
+            total_loss = 0
+            acc = 0
+            val_loss, val_acc = 0, 0
+            for data in self.train_loader:
+                self.optimizer.zero_grad()
+                out = self.model(data.x, data.edge_index, data.batch)
+                loss = self.criterion(out, data.y)
+                total_loss += loss.item() / len(self.train_loader)
+                acc += self.accuracy(out.argmax(dim=1), data.y) / len(self.train_loader)
+                loss.backward()
+                self.optimizer.step()
+            val_loss, val_acc = self.evaluate(self.val_loader)
+
+            if epoch % 20 == 0:
+                print(f'Epoch {epoch:>3} | Train Loss: {total_loss:.2f} | Train Acc: {acc*100:>5.2f}% | Val Loss: {val_loss:.2f} | Val Acc: {val_acc*100:.2f}%')
+        
     @torch.no_grad()
     def evaluate(self, loader):
         self.model.eval()
