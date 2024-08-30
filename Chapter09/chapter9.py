@@ -192,3 +192,29 @@ class Visualization:
             nx.draw_networkx(G, pos=nx.spring_layout(G, seed=0), with_labels=False, node_size=10, node_color=color, width=0.8, ax=ax[ix])
         plt.show()
     
+# ------------------------------------------------------ Evaluates the performance of ensemble models -------------------------------------------------------
+        
+class EnsembleEvaluator:
+    def __init__(self, gcn, gin, test_loader):
+        self.gcn = gcn
+        self.gin = gin
+        self.test_loader = test_loader
+
+    def evaluate(self):
+        self.gcn.eval()
+        self.gin.eval()
+        acc_gcn, acc_gin, acc_ens = 0, 0, 0
+        for data in self.test_loader:
+            out_gcn = self.gcn(data.x, data.edge_index, data.batch)
+            out_gin = self.gin(data.x, data.edge_index, data.batch)
+            out_ens = (out_gcn + out_gin) / 2
+            acc_gcn += self.accuracy(out_gcn.argmax(dim=1), data.y) / len(self.test_loader)
+            acc_gin += self.accuracy(out_gin.argmax(dim=1), data.y) / len(self.test_loader)
+            acc_ens += self.accuracy(out_ens.argmax(dim=1), data.y) / len(self.test_loader)
+        print(f'GCN accuracy:     {acc_gcn*100:.2f}%')
+        print(f'GIN accuracy:     {acc_gin*100:.2f}%')
+        print(f'GCN+GIN accuracy: {acc_ens*100:.2f}%')
+
+    def accuracy(self, pred_y, y):
+        return ((pred_y == y).sum() / len(y)).item()
+    
