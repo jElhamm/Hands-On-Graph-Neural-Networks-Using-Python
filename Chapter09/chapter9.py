@@ -168,3 +168,27 @@ class Trainer:
     def accuracy(self, pred_y, y):
         return ((pred_y == y).sum() / len(y)).item()
     
+# ---------------------------------------------------- Handles visualization of graph classification results --------------------------------------------------
+    
+class Visualization:
+    def __init__(self, dataset, gcn, gin):
+        self.dataset = dataset
+        self.gcn = gcn
+        self.gin = gin
+
+    def plot_classification_results(self):
+        self.plot_model_results(self.gcn, 'GCN - Graph classification')
+        self.plot_model_results(self.gin, 'GIN - Graph classification')
+
+    def plot_model_results(self, model, title):
+        fig, ax = plt.subplots(4, 4)
+        fig.suptitle(title)
+        for i, data in enumerate(self.dataset[-16:]):
+            out = model(data.x, data.edge_index, data.batch)
+            color = "green" if out.argmax(dim=1) == data.y else "red"
+            ix = np.unravel_index(i, ax.shape)
+            ax[ix].axis('off')
+            G = to_networkx(data, to_undirected=True)
+            nx.draw_networkx(G, pos=nx.spring_layout(G, seed=0), with_labels=False, node_size=10, node_color=color, width=0.8, ax=ax[ix])
+        plt.show()
+    
