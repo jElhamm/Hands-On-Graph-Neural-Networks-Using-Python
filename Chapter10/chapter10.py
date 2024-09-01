@@ -31,4 +31,17 @@ from torch_geometric.utils import k_hop_subgraph, to_scipy_sparse_matrix
 from torch.nn import Conv1d, MaxPool1d, Linear, Dropout, BCEWithLogitsLoss
 import warnings
 warnings.filterwarnings("ignore")
+
+
+# -------------------------------------------------------------- Set random seed ----------------------------------------------------------------------
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
+
+set_seed(0)
     
