@@ -218,3 +218,27 @@ class EnsembleEvaluator:
     def accuracy(self, pred_y, y):
         return ((pred_y == y).sum() / len(y)).item()
     
+
+# ---------------------------------------------------------------------- Main Code -----------------------------------------------------------------------
+
+dataset = GraphDataset()                                                                            # Initialize the dataset and print dataset information
+dataset.print_dataset_info()
+dataset.split_dataset()                                                                             # Split the dataset into training, validation, and test sets and create data loaders
+dataset.create_loaders()
+
+gcn = GCN(dim_h=32, num_features=dataset.num_features, num_classes=dataset.num_classes)             # Initialize GCN and GIN models with specified dimensions and features
+gin = GIN(dim_h=32, num_features=dataset.num_features, num_classes=dataset.num_classes)
+trainer_gcn = Trainer(gcn, dataset.train_loader, dataset.val_loader, dataset.test_loader)           # Initialize trainers for GCN and GIN models with respective data loaders
+trainer_gin = Trainer(gin, dataset.train_loader, dataset.val_loader, dataset.test_loader)
+
+trainer_gcn.train()                                                                                 # Train the GCN model and evaluate its performance
+test_loss_gcn, test_acc_gcn = trainer_gcn.evaluate(dataset.test_loader)
+print(f'Test Loss GCN: {test_loss_gcn:.2f} | Test Acc GCN: {test_acc_gcn*100:.2f}%')
+trainer_gin.train()                                                                                 # Train the GIN model and evaluate its performance
+test_loss_gin, test_acc_gin = trainer_gin.evaluate(dataset.test_loader)
+print(f'Test Loss GIN: {test_loss_gin:.2f} | Test Acc GIN: {test_acc_gin*100:.2f}%')
+visualization = Visualization(dataset.dataset, gcn, gin)                                            # Visualize classification results for GCN and GIN models
+
+visualization.plot_classification_results()
+ensemble_evaluator = EnsembleEvaluator(gcn, gin, dataset.test_loader)                               # Evaluate ensemble performance of GCN and GIN models
+ensemble_evaluator.evaluate()
