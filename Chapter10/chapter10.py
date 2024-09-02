@@ -206,3 +206,29 @@ class GraphModeling:
                 total_loss += float(loss) * data.num_graphs
             return total_loss / len(train_dataset)
         
+        @torch.no_grad()
+        def test(loader):
+            dgcnn_model.eval()
+            y_pred, y_true = [], []
+            for data in loader:
+                data = data.to(self.device)
+                out = dgcnn_model(data.x, data.edge_index, data.batch)
+                y_pred.append(out.view(-1).cpu())
+                y_true.append(data.y.view(-1).cpu().to(torch.float))
+            auc = roc_auc_score(torch.cat(y_true), torch.cat(y_pred))
+            ap = average_precision_score(torch.cat(y_true), torch.cat(y_pred))
+            return auc, ap
+
+        for epoch in range(31):
+            loss = train()
+            val_auc, val_ap = test(val_loader)
+            print(f'Epoch {epoch:>2} | Loss: {loss:.4f} | Val AUC: {val_auc:.4f} | Val AP: {val_ap:.4f}')
+
+        test_auc, test_ap = test(test_loader)
+        print(f'Test AUC: {test_auc:.4f} | Test AP {test_ap:.4f}')
+
+# ------------------------------------------------------------------- Main Code -----------------------------------------------------------------------
+
+graph_modeling = GraphModeling()
+graph_modeling.run_vgae()
+graph_modeling.run_dgcnn()
