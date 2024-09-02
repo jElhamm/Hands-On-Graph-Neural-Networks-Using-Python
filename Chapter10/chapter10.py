@@ -83,3 +83,22 @@ class VGAEModel:
         z = self.model.encode(data.x, data.edge_index)
         return self.model.test(z, data.pos_edge_label_index, data.neg_edge_label_index)
     
+# ---------------------------------------- This class contains a static method for processing graph data ----------------------------------------------
+
+class SealProcessing:
+    @staticmethod
+    def process(dataset, edge_label_index, y):
+        data_list = []
+        for src, dst in edge_label_index.t().tolist():
+            sub_nodes, sub_edge_index, mapping, _ = k_hop_subgraph([src, dst], 2, dataset.edge_index, relabel_nodes=True)
+            src, dst = mapping.tolist()
+            mask1 = (sub_edge_index[0] != src) | (sub_edge_index[1] != dst)
+            mask2 = (sub_edge_index[0] != dst) | (sub_edge_index[1] != src)
+            sub_edge_index = sub_edge_index[:, mask1 & mask2]
+            src, dst = (dst, src) if src > dst else (src, dst)
+            adj = to_scipy_sparse_matrix(sub_edge_index, num_nodes=sub_nodes.size(0)).tocsr()
+            idx = list(range(src)) + list(range(src + 1, adj.shape[0]))
+            adj_wo_src = adj[idx, :][:, idx]
+            idx = list(range(dst)) + list(range(dst + 1, adj.shape[0]))
+            adj_wo_dst = adj[idx, :][:, idx]
+        
