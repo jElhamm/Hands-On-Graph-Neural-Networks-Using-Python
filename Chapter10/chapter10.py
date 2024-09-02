@@ -120,3 +120,37 @@ class SealProcessing:
             
         return data_list
     
+# ---------------------------------- This class implements the Deep Graph Convolutional Neural Network (DGCNN) ----------------------------------------
+
+class DGCNNModel(torch.nn.Module):
+    def __init__(self, dim_in, k=30):
+        super().__init__()
+        self.gcn1 = GCNConv(dim_in, 32)
+        self.gcn2 = GCNConv(32, 32)
+        self.gcn3 = GCNConv(32, 32)
+        self.gcn4 = GCNConv(32, 1)
+        self.k = k
+        self.conv1 = Conv1d(1, 16, 97, 97)
+        self.conv2 = Conv1d(16, 32, 5, 1)
+        self.maxpool = MaxPool1d(2, 2)
+        self.linear1 = Linear(352, 128)
+        self.dropout = Dropout(0.5)
+        self.linear2 = Linear(128, 1)
+
+    def forward(self, x, edge_index, batch):
+        h1 = self.gcn1(x, edge_index).tanh()
+        h2 = self.gcn2(h1, edge_index).tanh()
+        h3 = self.gcn3(h2, edge_index).tanh()
+        h4 = self.gcn4(h3, edge_index).tanh()
+        h = torch.cat([h1, h2, h3, h4], dim=-1)
+        h = global_sort_pool(h, batch, k=self.k)
+        h = h.view(h.size(0), 1, h.size(-1))
+        h = self.conv1(h).relu()
+        h = self.maxpool(h)
+        h = self.conv2(h).relu()
+        h = h.view(h.size(0), -1)
+        h = self.linear1(h).relu()
+        h = self.dropout(h)
+        h = self.linear2(h).sigmoid()
+        return h
+    
