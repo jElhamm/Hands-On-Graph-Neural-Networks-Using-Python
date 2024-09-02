@@ -59,3 +59,27 @@ class Encoder(torch.nn.Module):
         x = self.conv1(x, edge_index).relu()
         return self.conv_mu(x, edge_index), self.conv_logstd(x, edge_index)
     
+# ------------------------------- manages the VGAE model, including its initialization, training, and evaluation --------------------------------------
+
+class VGAEModel:
+    def __init__(self, dataset, device):
+        self.device = device
+        self.model = VGAE(Encoder(dataset.num_features, 16)).to(device)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.01)
+
+    def train(self, train_data):
+        self.model.train()
+        self.optimizer.zero_grad()
+        z = self.model.encode(train_data.x, train_data.edge_index)
+        loss = self.model.recon_loss(z, train_data.pos_edge_label_index) + \
+               (1 / train_data.num_nodes) * self.model.kl_loss()
+        loss.backward()
+        self.optimizer.step()
+        return float(loss)
+
+    @torch.no_grad()
+    def test(self, data):
+        self.model.eval()
+        z = self.model.encode(data.x, data.edge_index)
+        return self.model.test(z, data.pos_edge_label_index, data.neg_edge_label_index)
+    
