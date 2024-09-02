@@ -175,3 +175,34 @@ class GraphModeling:
         Ahat = torch.sigmoid(z @ z.T)
         print(Ahat)
     
+    def run_dgcnn(self):
+        train_pos_data_list = SealProcessing.process(self.train_data, self.train_data.pos_edge_label_index, 1)
+        train_neg_data_list = SealProcessing.process(self.train_data, self.train_data.neg_edge_label_index, 0)
+        val_pos_data_list = SealProcessing.process(self.val_data, self.val_data.pos_edge_label_index, 1)
+        val_neg_data_list = SealProcessing.process(self.val_data, self.val_data.neg_edge_label_index, 0)
+        test_pos_data_list = SealProcessing.process(self.test_data, self.test_data.pos_edge_label_index, 1)
+        test_neg_data_list = SealProcessing.process(self.test_data, self.test_data.neg_edge_label_index, 0)
+
+        train_dataset = train_pos_data_list + train_neg_data_list
+        val_dataset = val_pos_data_list + val_neg_data_list
+        test_dataset = test_pos_data_list + test_neg_data_list
+        train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=32)
+        test_loader = DataLoader(test_dataset, batch_size=32)
+        dgcnn_model = DGCNNModel(train_dataset[0].num_features).to(self.device)
+        optimizer = torch.optim.Adam(params=dgcnn_model.parameters(), lr=0.0001)
+        criterion = BCEWithLogitsLoss()
+
+        def train():
+            dgcnn_model.train()
+            total_loss = 0
+            for data in train_loader:
+                data = data.to(self.device)
+                optimizer.zero_grad()
+                out = dgcnn_model(data.x, data.edge_index, data.batch)
+                loss = criterion(out.view(-1), data.y.to(torch.float))
+                loss.backward()
+                optimizer.step()
+                total_loss += float(loss) * data.num_graphs
+            return total_loss / len(train_dataset)
+        
