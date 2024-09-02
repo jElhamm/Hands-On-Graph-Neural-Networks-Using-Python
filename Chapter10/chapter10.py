@@ -154,3 +154,24 @@ class DGCNNModel(torch.nn.Module):
         h = self.linear2(h).sigmoid()
         return h
     
+# ------------------------------------------------ This class is the main driver for the experiments -------------------------------------------------
+    
+class GraphModeling:
+    def __init__(self):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.dataset = Planetoid('.', name='Cora', transform=RandomLinkSplit(num_val=0.05, num_test=0.1, is_undirected=True, split_labels=True))
+        self.train_data, self.val_data, self.test_data = self.dataset[0]
+
+    def run_vgae(self):
+        vgae_model = VGAEModel(self.dataset, self.device)
+        for epoch in range(301):
+            loss = vgae_model.train(self.train_data)
+            val_auc, val_ap = vgae_model.test(self.test_data)
+            if epoch % 50 == 0:
+                print(f'Epoch {epoch:>2} | Loss: {loss:.4f} | Val AUC: {val_auc:.4f} | Val AP: {val_ap:.4f}')
+        test_auc, test_ap = vgae_model.test(self.test_data)
+        print(f'Test AUC: {test_auc:.4f} | Test AP {test_ap:.4f}')
+        z = vgae_model.model.encode(self.test_data.x, self.test_data.edge_index)
+        Ahat = torch.sigmoid(z @ z.T)
+        print(Ahat)
+    
