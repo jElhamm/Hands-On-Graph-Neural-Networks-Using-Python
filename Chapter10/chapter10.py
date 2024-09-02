@@ -102,3 +102,21 @@ class SealProcessing:
             idx = list(range(dst)) + list(range(dst + 1, adj.shape[0]))
             adj_wo_dst = adj[idx, :][:, idx]
         
+            d_src = shortest_path(adj_wo_dst, directed=False, unweighted=True, indices=src)
+            d_src = np.insert(d_src, dst, 0, axis=0)
+            d_src = torch.from_numpy(d_src)
+            d_dst = shortest_path(adj_wo_src, directed=False, unweighted=True, indices=dst-1)
+            d_dst = np.insert(d_dst, src, 0, axis=0)
+            d_dst = torch.from_numpy(d_dst)
+            dist = d_src + d_dst
+            z = 1 + torch.min(d_src, d_dst) + dist // 2 * (dist // 2 + dist % 2 - 1)
+            z[src], z[dst], z[torch.isnan(z)] = 1., 1., 0.
+            z = z.to(torch.long)
+            node_labels = F.one_hot(z, num_classes=200).to(torch.float)
+            node_emb = dataset.x[sub_nodes]
+            node_x = torch.cat([node_emb, node_labels], dim=1)
+            data = Data(x=node_x, z=z, edge_index=sub_edge_index, y=y)
+            data_list.append(data)
+            
+        return data_list
+    
