@@ -49,4 +49,30 @@ class GCNConv(MessagePassing):
 
     def message(self, x, norm):
         return norm.view(-1, 1) * x
+
+# ---------------------------------------------- This class represents a `Graph Attention Network (GAT) model`-----------------------------------------------
+
+class GATModel(nn.Module):
+    def __init__(self, dim_h, dim_out):
+        super().__init__()
+        self.conv = GATConv((-1, -1), dim_h, add_self_loops=False)
+        self.linear = nn.Linear(dim_h, dim_out)
+
+    def forward(self, x_dict, edge_index_dict):
+        h = self.conv(x_dict['author'], edge_index_dict[('author', 'metapath_0', 'author')]).relu()
+        h = self.linear(h)
+        return h
+    
+# ------------------------------------------ This class defines a `Heterogeneous Graph Attention Network (HAN) model`----------------------------------------
+
+class HANModel(nn.Module):
+    def __init__(self, dim_in, dim_out, dim_h=128, heads=8):
+        super().__init__()
+        self.han = HANConv(dim_in, dim_h, heads=heads, dropout=0.6, metadata=data.metadata())
+        self.linear = nn.Linear(dim_h, dim_out)
+
+    def forward(self, x_dict, edge_index_dict):
+        out = self.han(x_dict, edge_index_dict)
+        out = self.linear(out['author'])
+        return out
     
