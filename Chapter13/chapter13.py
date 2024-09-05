@@ -58,3 +58,30 @@ class WikiMathsDataLoader:
         plt.legend(loc='upper right')
         plt.show()
     
+# -------------------------------------------------------------- England Covid Data Loader Class -----------------------------------------------------------------
+        
+class EnglandCovidDataLoader:
+    def __init__(self):
+        self.dataset = EnglandCovidDatasetLoader().get_dataset(lags=14)
+        self.train_dataset, self.test_dataset = temporal_signal_split(self.dataset, train_ratio=0.8)
+        self.df = self._prepare_dataframe()
+
+    def _prepare_dataframe(self):
+        mean_cases = [snapshot.y.mean().item() for snapshot in self.dataset]
+        std_cases = [snapshot.y.std().item() for snapshot in self.dataset]
+        df = pd.DataFrame(mean_cases, columns=['mean'])
+        df['std'] = pd.DataFrame(std_cases, columns=['std'])
+        return df
+
+    def plot_data(self):
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.df['mean'], 'k-')
+        plt.grid(linestyle=':')
+        plt.fill_between(self.df.index, self.df['mean'] - self.df['std'], self.df['mean'] + self.df['std'], color='r', alpha=0.1)
+        plt.axvline(x=38, color='b', linestyle='--', label='Train/test split')
+        plt.text(38, 1, 'Train/test split', rotation=-90, color='b')
+        plt.xlabel('Reports')
+        plt.ylabel('Mean normalized number of cases')
+        plt.legend(loc='upper right')
+        plt.show()
+    
