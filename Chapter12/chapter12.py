@@ -136,3 +136,20 @@ for epoch in range(101):
         # Save model checkpoint
         torch.save(han_model.state_dict(), f'han_model_epoch_{epoch}.pth')
     
+# --------------------------------------------------------------------- Final Test --------------------------------------------------------------------------
+
+test_acc, test_preds = test(data['author'].test_mask, han_model, data)
+test_precision, test_recall, test_f1 = compute_metrics(test_preds, data['author'].y[data['author'].test_mask].cpu().numpy())
+print(f'\nTest accuracy: {test_acc*100:.2f}%')
+print("\n\n------------------------------------------------------------------------------------------------------------")
+print(f'\n    * Test Precision: {test_precision:.2f},\n    * Test Recall: {test_recall:.2f},\n    * Test F1: {test_f1:.2f}')
+
+# ----------------------------------------------------------------- Plot training loss ----------------------------------------------------------------------
+
+plt.figure()
+plt.plot(range(101), train_losses, label='Train Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training Loss')
+plt.legend()
+plt.show()
