@@ -96,4 +96,43 @@ data, han_model = data.to(device), han_model.to(device)
 # ----------------------------------------------------------------------- Print Keys ------------------------------------------------------------------------
 
 print("\n\nKeys in edge_index_dict:\n", data.edge_index_dict.keys(), "\n\n")
+
+# ------------------------------------------------------------------------ Training -------------------------------------------------------------------------
+
+@torch.no_grad()
+def test(mask, model, data):
+    model.eval()
+    pred = model(data.x_dict, data.edge_index_dict).argmax(dim=-1)
+    acc = (pred[mask] == data['author'].y[mask]).sum() / mask.sum()
+    return float(acc), pred[mask].cpu().numpy()
+
+def compute_metrics(preds, labels):
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='weighted')
+    return precision, recall, f1
+
+# Training loop
+train_losses = []
+for epoch in range(101):
+    han_model.train()
+    optimizer.zero_grad()
+    out = han_model(data.x_dict, data.edge_index_dict)
+    mask = data['author'].train_mask
+    loss = F.cross_entropy(out[mask], data['author'].y[mask])
+    loss.backward()
+    optimizer.step()
+
+    train_losses.append(loss.item())
+    if epoch % 20 == 0:
+        train_acc, train_preds = test(data['author'].train_mask, han_model, data)
+        val_acc, val_preds = test(data['author'].val_mask, han_model, data)
+
+        train_precision, train_recall, train_f1 = compute_metrics(train_preds, data['author'].y[data['author'].train_mask].cpu().numpy())
+        val_precision, val_recall, val_f1 = compute_metrics(val_preds, data['author'].y[data['author'].val_mask].cpu().numpy())
+        print("\n\n------------------------------------------------------------------------------------------------------------")
+        print(f'Epoch: {epoch:>3} | Train Loss: {loss:.4f} | Train Acc: {train_acc*100:.2f}% | Val Acc: {val_acc*100:.2f}%')
+        print(f'\n    * Train Precision: {train_precision:.2f},\n    * Train Recall: {train_recall:.2f},\n    * Train F1: {train_f1:.2f}')
+        print(f'    * Val Precision: {val_precision:.2f},\n    * Val Recall: {val_recall:.2f},\n    * Val F1: {val_f1:.2f}')
+
+        # Save model checkpoint
+        torch.save(han_model.state_dict(), f'han_model_epoch_{epoch}.pth')
     
