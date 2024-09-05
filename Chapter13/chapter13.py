@@ -26,4 +26,35 @@ import matplotlib.pyplot as plt
 from torch_geometric_temporal.signal import temporal_signal_split
 from torch_geometric_temporal.nn.recurrent import EvolveGCNH, EvolveGCNO, MPNNLSTM
 from torch_geometric_temporal.dataset import WikiMathsDatasetLoader, EnglandCovidDatasetLoader
+
+
+
+# ------------------------------------------------------------------ WikiMaths Data Loader Class -----------------------------------------------------------------
+
+class WikiMathsDataLoader:
+    def __init__(self):
+        self.dataset = WikiMathsDatasetLoader().get_dataset()
+        self.train_dataset, self.test_dataset = temporal_signal_split(self.dataset, train_ratio=0.5)
+        self.df = self._prepare_dataframe()
+
+    def _prepare_dataframe(self):
+        mean_cases = [snapshot.y.mean().item() for snapshot in self.dataset]
+        std_cases = [snapshot.y.std().item() for snapshot in self.dataset]
+        df = pd.DataFrame(mean_cases, columns=['mean'])
+        df['std'] = pd.DataFrame(std_cases, columns=['std'])
+        df['rolling'] = df['mean'].rolling(7).mean()
+        return df
+
+    def plot_data(self):
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.df['mean'], 'k-', label='Mean')
+        plt.plot(self.df['rolling'], 'g-', label='Moving average')
+        plt.grid(linestyle=':')
+        plt.fill_between(self.df.index, self.df['mean'] - self.df['std'], self.df['mean'] + self.df['std'], color='r', alpha=0.1)
+        plt.axvline(x=360, color='b', linestyle='--')
+        plt.text(360, 1.5, 'Train/test split', rotation=-90, color='b')
+        plt.xlabel('Time (days)')
+        plt.ylabel('Normalized number of visits')
+        plt.legend(loc='upper right')
+        plt.show()
     
