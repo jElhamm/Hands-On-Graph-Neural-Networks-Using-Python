@@ -76,3 +76,24 @@ class HANModel(nn.Module):
         out = self.linear(out['author'])
         return out
     
+
+# ------------------------------------------------------------------ Prepare data and models ----------------------------------------------------------------
+
+dataset = DBLP('.')
+data = dataset[0]
+data['conference'].x = torch.zeros(20, 1)
+
+gcn_model = GCNConv(dim_in=16, dim_h=32)
+gat_model = GATModel(dim_h=64, dim_out=4)
+han_model = HANModel(dim_in=-1, dim_out=4)
+
+# -------------------------------------------------------- Ensure correct initialization and forwarding------------------------------------------------------
+
+optimizer = torch.optim.Adam(han_model.parameters(), lr=0.001, weight_decay=0.001)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+data, han_model = data.to(device), han_model.to(device)
+
+# ----------------------------------------------------------------------- Print Keys ------------------------------------------------------------------------
+
+print("\n\nKeys in edge_index_dict:\n", data.edge_index_dict.keys(), "\n\n")
+    
