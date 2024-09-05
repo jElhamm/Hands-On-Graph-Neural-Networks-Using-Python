@@ -85,3 +85,29 @@ class EnglandCovidDataLoader:
         plt.legend(loc='upper right')
         plt.show()
     
+# ----------------------------------------------------------- TemporalGNN model class with EvolveGCNH ------------------------------------------------------------
+
+class TemporalGNNWikiMaths(nn.Module):
+    def __init__(self, node_count, dim_in):
+        super(TemporalGNNWikiMaths, self).__init__()
+        self.recurrent = EvolveGCNH(node_count, dim_in)
+        self.linear = nn.Linear(dim_in, 1)
+
+    def forward(self, x, edge_index, edge_weight):
+        h = self.recurrent(x, edge_index, edge_weight).relu()
+        h = self.linear(h)
+        return h
+
+# ----------------------------------------------------------- TemporalGNN model class with EvolveGCNO -----------------------------------------------------------
+
+class TemporalGNNEnglandCovidEvolveGCNO(nn.Module):
+    def __init__(self, dim_in):
+        super(TemporalGNNEnglandCovidEvolveGCNO, self).__init__()
+        self.recurrent = EvolveGCNO(dim_in, 1)
+        self.linear = nn.Linear(dim_in, 1)
+
+    def forward(self, x, edge_index, edge_weight):
+        h = self.recurrent(x, edge_index, edge_weight).relu()
+        h = self.linear(h)
+        return h
+    
