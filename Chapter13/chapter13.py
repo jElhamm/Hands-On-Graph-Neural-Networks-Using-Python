@@ -183,4 +183,33 @@ class Trainer:
         plt.xlabel('True Values')
         plt.ylabel('Predictions')
         plt.show()
+
+# ----------------------------------------------------------- Set random seed for reproducibility ---------------------------------------------------------------
+
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+# ------------------------------------------------------------- Load data for WikiMathsDataset -----------------------------------------------------------------
+
+wiki_data_loader = WikiMathsDataLoader()
+wiki_data_loader.plot_data()
+
+# ------------------------------------------------------ Initialize and train model for WikiMathsDataset -------------------------------------------------------
+
+wiki_model = TemporalGNNWikiMaths(wiki_data_loader.dataset[0].x.shape[0], wiki_data_loader.dataset[0].x.shape[1])
+wiki_trainer = Trainer(wiki_model, wiki_data_loader.train_dataset, wiki_data_loader.test_dataset)
+wiki_trainer.train(epochs=50)
+
+# ---------------------------------------------------------- Evaluate prediction for WikiMathsDataset ----------------------------------------------------------
+
+mse_loss = wiki_trainer.evaluate()
+print(f'WikiMaths MSE = {mse_loss:.4f}')
+
+# ------------------------------------------------------------- plot prediction for WikiMathsDatase ------------------------------------------------------------
+
+y_preds = wiki_trainer.predict()
+wiki_trainer.plot_prediction(wiki_data_loader.df, y_preds)
     
