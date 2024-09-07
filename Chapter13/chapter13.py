@@ -126,3 +126,35 @@ class TemporalGNNEnglandCovidMPNNLSTM(nn.Module):
         h = self.linear(h).tanh()
         return h
     
+# ------------------------------------------------------------------------- Trainer class -----------------------------------------------------------------------
+
+class Trainer:
+    def __init__(self, model, train_dataset, test_dataset):
+        self.model = model
+        self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
+        self.optimizer = optim.Adam(self.model.parameters(), lr=0.01)
+        self.criterion = nn.MSELoss()
+
+    def train(self, epochs):
+        self.model.train()
+        for epoch in tqdm(range(epochs)):
+            for snapshot in self.train_dataset:
+                y_pred = self.model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+                loss = self.criterion(y_pred, snapshot.y)
+                loss.backward()
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+
+    def evaluate(self):
+        self.model.eval()
+        total_loss = 0
+        snapshot_count = 0
+        with torch.no_grad():
+            for snapshot in self.test_dataset:
+                y_pred = self.model(snapshot.x, snapshot.edge_index, snapshot.edge_attr)
+                mse = self.criterion(y_pred, snapshot.y)
+                total_loss += mse.item()
+                snapshot_count += 1
+        return total_loss / snapshot_count
+    
