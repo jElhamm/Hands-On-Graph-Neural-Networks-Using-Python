@@ -111,3 +111,18 @@ class TemporalGNNEnglandCovidEvolveGCNO(nn.Module):
         h = self.linear(h)
         return h
     
+# ----------------------------------------------------------- TemporalGNN model class with MPNNLSTM -------------------------------------------------------------
+
+class TemporalGNNEnglandCovidMPNNLSTM(nn.Module):
+    def __init__(self, dim_in, dim_h, num_nodes):
+        super(TemporalGNNEnglandCovidMPNNLSTM, self).__init__()
+        self.recurrent = MPNNLSTM(dim_in, dim_h, num_nodes, 1, 0.5)
+        self.dropout = nn.Dropout(0.5)
+        self.linear = nn.Linear(2*dim_h + dim_in, 1)
+
+    def forward(self, x, edge_index, edge_weight):
+        h = self.recurrent(x, edge_index, edge_weight).relu()
+        h = self.dropout(h)
+        h = self.linear(h).tanh()
+        return h
+    
