@@ -213,3 +213,31 @@ print(f'WikiMaths MSE = {mse_loss:.4f}')
 y_preds = wiki_trainer.predict()
 wiki_trainer.plot_prediction(wiki_data_loader.df, y_preds)
     
+# ------------------------------------------------------------- plot Regression for WikiMathsDatase ------------------------------------------------------------
+
+wiki_trainer.plot_regression(wiki_data_loader.test_dataset)
+
+# ------------------------------------------------------------- Load data for EnglandCovidDataset --------------------------------------------------------------
+
+covid_data_loader = EnglandCovidDataLoader()
+covid_data_loader.plot_data()
+
+# ---------------------------------------------------- Initialize and train model for EnglandCovidDataset ------------------------------------------------------
+
+covid_model = TemporalGNNEnglandCovidEvolveGCNO(dim_in=covid_data_loader.dataset[0].x.shape[1])
+covid_trainer = Trainer(covid_model, covid_data_loader.train_dataset, covid_data_loader.test_dataset)
+covid_trainer.train(epochs=50)
+
+# ----------------------------------------------------------- Evaluate for EnglandCovidDataset -----------------------------------------------------------------
+
+mse_loss = covid_trainer.evaluate()
+print(f'EnglandCovid MSE = {mse_loss:.4f}')
+
+# ---------------------------------------------------------- Plot Prediction for EnglandCovidDataset -----------------------------------------------------------
+
+y_preds = covid_trainer.predict()
+covid_trainer.plot_prediction(covid_data_loader.df, y_preds)
+
+# ---------------------------------------------------------- Plot Regression for EnglandCovidDataset -----------------------------------------------------------
+
+covid_trainer.plot_regression(covid_data_loader.test_dataset)
