@@ -33,4 +33,21 @@ from torch_geometric.transforms import ToUndirected
 from torch_geometric.datasets import TUDataset, Twitch
 from torch.nn import Linear, Sequential, BatchNorm1d, ReLU, Dropout
 from torch_geometric.nn import GINConv, GCNConv, global_add_pool, GNNExplainer
+
+
+# ----------------------------------------- The class manages dataset loading and preparation for training and testing -----------------------------------------
+
+class DataPreparation:
+    def __init__(self, dataset_name='MUTAG', twitch=False):
+        if twitch:
+            self.dataset = Twitch('.', name=dataset_name)
+            self.data = self.dataset[0]
+        else:
+            self.dataset = TUDataset(root='data/TUDataset', name=dataset_name).shuffle()
+            self.train_dataset = self.dataset[:int(len(self.dataset)*0.8)]
+            self.val_dataset = self.dataset[int(len(self.dataset)*0.8):int(len(self.dataset)*0.9)]
+            self.test_dataset = self.dataset[int(len(self.dataset)*0.9):]
+            self.train_loader = DataLoader(self.train_dataset, batch_size=64, shuffle=True)
+            self.val_loader = DataLoader(self.val_dataset, batch_size=64, shuffle=True)
+            self.test_loader = DataLoader(self.test_dataset, batch_size=64, shuffle=True)
     
