@@ -158,3 +158,29 @@ class Trainer:
                 snapshot_count += 1
         return total_loss / snapshot_count
     
+    def predict(self):
+        self.model.eval()
+        y_preds = [self.model(snapshot.x, snapshot.edge_index, snapshot.edge_attr).squeeze().detach().numpy().mean() for snapshot in self.test_dataset]
+        return y_preds
+
+    def plot_prediction(self, df, y_preds):
+        plt.figure(figsize=(10, 5), dpi=300)
+        plt.plot(df['mean'], 'k-', label='Mean')
+        plt.plot(range(len(df) - len(y_preds), len(df)), y_preds, 'r-', label='Prediction')
+        plt.grid(linestyle=':')
+        plt.fill_between(df.index, df['mean'] - df['std'], df['mean'] + df['std'], color='r', alpha=0.1)
+        plt.axvline(x=len(df) - len(y_preds), color='b', linestyle='--')
+        plt.text(len(df) - len(y_preds), 1.5, 'Train/test split', rotation=-90, color='b')
+        plt.xlabel('Time (days)')
+        plt.ylabel('Normalized number of visits')
+        plt.legend(loc='upper right')
+        plt.show()
+
+    def plot_regression(self, test_dataset):
+        y_pred = self.model(test_dataset[0].x, test_dataset[0].edge_index, test_dataset[0].edge_attr).detach().squeeze().numpy()
+        plt.figure(figsize=(10, 5), dpi=300)
+        sns.regplot(x=test_dataset[0].y.numpy(), y=y_pred)
+        plt.xlabel('True Values')
+        plt.ylabel('Predictions')
+        plt.show()
+    
