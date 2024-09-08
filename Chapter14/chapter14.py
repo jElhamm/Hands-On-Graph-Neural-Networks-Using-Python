@@ -106,6 +106,25 @@ class ModelTrainer:
         self.criterion = criterion
         self.dataset = dataset
     
+    def train(self, epochs, train_loader, val_loader):
+        for epoch in range(epochs+1):
+            self.model.train()
+            total_loss = 0
+            acc = 0
+            val_loss = 0
+            val_acc = 0
+            for data in train_loader:
+                self.optimizer.zero_grad()
+                out = self.model(data.x, data.edge_index, data.batch)
+                loss = self.criterion(out, data.y)
+                total_loss += loss / len(train_loader)
+                acc += self.accuracy(out.argmax(dim=1), data.y) / len(train_loader)
+                loss.backward()
+                self.optimizer.step()
+                val_loss, val_acc = self.test(val_loader)
+            if epoch % 20 == 0:
+                print(f'Epoch {epoch:>3} | Train Loss: {total_loss:.2f} | Train Acc: {acc*100:>5.2f}% | Val Loss: {val_loss:.2f} | Val Acc: {val_acc*100:.2f}%')
+    
     def test(self, loader):
         self.model.eval()
         loss = 0
@@ -118,4 +137,3 @@ class ModelTrainer:
 
     def accuracy(self, pred_y, y):
         return ((pred_y == y).sum() / len(y)).item()
-    
