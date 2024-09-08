@@ -83,3 +83,17 @@ class GINModel(torch.nn.Module):
         h = self.lin2(h)
         return F.log_softmax(h, dim=1)
     
+# ---------------------------------------- The class implements a Graph Convolutional Network with two GCNConv layers ----------------------------------------
+
+class GCNModel(torch.nn.Module):
+    def __init__(self, dim_h, dataset):
+        super(GCNModel, self).__init__()
+        self.conv1 = GCNConv(dataset.num_features, dim_h)
+        self.conv2 = GCNConv(dim_h, dataset.num_classes)
+
+    def forward(self, x, edge_index):
+        h = self.conv1(x, edge_index).relu()
+        h = F.dropout(h, p=0.5, training=self.training)
+        h = self.conv2(h, edge_index)
+        return F.log_softmax(h, dim=1)
+    
