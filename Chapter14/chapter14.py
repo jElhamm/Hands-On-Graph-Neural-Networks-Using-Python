@@ -51,3 +51,35 @@ class DataPreparation:
             self.val_loader = DataLoader(self.val_dataset, batch_size=64, shuffle=True)
             self.test_loader = DataLoader(self.test_dataset, batch_size=64, shuffle=True)
     
+# ------------------------------------------ The class defines a Graph Isomorphism Network with three GINConv layers -------------------------------------------
+
+class GINModel(torch.nn.Module):
+    def __init__(self, dim_h, dataset):
+        super(GINModel, self).__init__()
+        self.conv1 = GINConv(
+            Sequential(Linear(dataset.num_node_features, dim_h),
+                       BatchNorm1d(dim_h), ReLU(),
+                       Linear(dim_h, dim_h), ReLU()))
+        self.conv2 = GINConv(
+            Sequential(Linear(dim_h, dim_h), BatchNorm1d(dim_h), ReLU(),
+                       Linear(dim_h, dim_h), ReLU()))
+        self.conv3 = GINConv(
+            Sequential(Linear(dim_h, dim_h), BatchNorm1d(dim_h), ReLU(),
+                       Linear(dim_h, dim_h), ReLU()))
+        self.lin1 = Linear(dim_h*3, dim_h*3)
+        self.lin2 = Linear(dim_h*3, dataset.num_classes)
+
+    def forward(self, x, edge_index, batch):
+        h1 = self.conv1(x, edge_index)
+        h2 = self.conv2(h1, edge_index)
+        h3 = self.conv3(h2, edge_index)
+        h1 = global_add_pool(h1, batch)
+        h2 = global_add_pool(h2, batch)
+        h3 = global_add_pool(h3, batch)
+        h = torch.cat((h1, h2, h3), dim=1)
+        h = self.lin1(h)
+        h = h.relu()
+        h = F.dropout(h, p=0.5, training=self.training)
+        h = self.lin2(h)
+        return F.log_softmax(h, dim=1)
+    
