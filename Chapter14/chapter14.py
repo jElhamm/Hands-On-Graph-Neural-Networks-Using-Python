@@ -97,3 +97,25 @@ class GCNModel(torch.nn.Module):
         h = self.conv2(h, edge_index)
         return F.log_softmax(h, dim=1)
     
+# ------------------------------------ The class facilitates the training and evaluation of graph neural network models ----------------------------------------
+
+class ModelTrainer:
+    def __init__(self, model, dataset, optimizer, criterion):
+        self.model = model
+        self.optimizer = optimizer
+        self.criterion = criterion
+        self.dataset = dataset
+    
+    def test(self, loader):
+        self.model.eval()
+        loss = 0
+        acc = 0
+        for data in loader:
+            out = self.model(data.x, data.edge_index, data.batch)
+            loss += self.criterion(out, data.y) / len(loader)
+            acc += self.accuracy(out.argmax(dim=1), data.y) / len(loader)
+        return loss, acc
+
+    def accuracy(self, pred_y, y):
+        return ((pred_y == y).sum() / len(y)).item()
+    
