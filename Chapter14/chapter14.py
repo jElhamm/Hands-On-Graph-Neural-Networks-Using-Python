@@ -137,3 +137,17 @@ class ModelTrainer:
 
     def accuracy(self, pred_y, y):
         return ((pred_y == y).sum() / len(y)).item()
+
+
+# ---------------------------------- ---------------------------------- Main Code ------------------------------------------------------------------------------
+
+data_preparation = DataPreparation(dataset_name='MUTAG')
+model = GINModel(dim_h=32, dataset=data_preparation.dataset)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+criterion = torch.nn.CrossEntropyLoss()
+
+trainer = ModelTrainer(model, data_preparation.dataset, optimizer, criterion)
+trainer.train(epochs=200, train_loader=data_preparation.train_loader, val_loader=data_preparation.val_loader)
+test_loss, test_acc = trainer.test(data_preparation.test_loader)
+print(f'Test Loss: {test_loss:.2f} | Test Acc: {test_acc*100:.2f}%')
+    
