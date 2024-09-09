@@ -150,4 +150,18 @@ trainer = ModelTrainer(model, data_preparation.dataset, optimizer, criterion)
 trainer.train(epochs=200, train_loader=data_preparation.train_loader, val_loader=data_preparation.val_loader)
 test_loss, test_acc = trainer.test(data_preparation.test_loader)
 print(f'Test Loss: {test_loss:.2f} | Test Acc: {test_acc*100:.2f}%')
+
+# --------------------------------------------------------------- GNNExplainer for GIN Model -------------------------------------------------------------------
+
+explainer = GNNExplainer(model, epochs=100, num_hops=1)
+data = data_preparation.dataset[-1]
+batch = torch.zeros(data.x.size(0), dtype=torch.long, device=data.x.device)
+feature_mask, edge_mask = explainer.explain_graph(data.x, data.edge_index)
+G = to_networkx(data, edge_attrs=['edge_attr'])
+edge_mask = edge_mask.detach().cpu().numpy()
+edge_mask = (edge_mask - edge_mask.min()) / (edge_mask.max() - edge_mask.min() + 1e-5)
+plt.figure(dpi=200)
+pos = nx.spring_layout(G)
+nx.draw(G, pos, with_labels=True, edge_color=edge_mask, edge_cmap=plt.cm.Blues, node_size=300, font_size=8, node_color='orange')
+plt.show()
     
