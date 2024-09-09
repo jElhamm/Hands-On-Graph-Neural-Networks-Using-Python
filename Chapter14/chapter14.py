@@ -164,4 +164,21 @@ plt.figure(dpi=200)
 pos = nx.spring_layout(G)
 nx.draw(G, pos, with_labels=True, edge_color=edge_mask, edge_cmap=plt.cm.Blues, node_size=300, font_size=8, node_color='orange')
 plt.show()
-    
+
+# ---------------------------------------------------- GCN Model with Captum Integration And Test GCN Model ---------------------------------------------------
+
+twitch_data_preparation = DataPreparation(twitch=True, dataset_name='EN')
+gcn_model = GCNModel(dim_h=64, dataset=twitch_data_preparation.dataset).to(torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+twitch_data = twitch_data_preparation.data.to(torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+optimizer = torch.optim.Adam(gcn_model.parameters(), lr=0.001, weight_decay=5e-4)
+
+for epoch in range(200):
+    gcn_model.train()
+    optimizer.zero_grad()
+    log_logits = gcn_model(twitch_data.x, twitch_data.edge_index)
+    loss = F.nll_loss(log_logits, twitch_data.y)
+    loss.backward()
+    optimizer.step()
+
+acc = trainer.accuracy(gcn_model(twitch_data.x, twitch_data.edge_index).argmax(dim=1), twitch_data.y)
+print(f'Accuracy: {acc*100:.2f}%')
