@@ -90,3 +90,16 @@ class DataPreparation:
         nx.draw(G, with_labels=True)
         plt.show()
     
+# ---------------------------------- defines a temporal graph neural network model using the A3TGCN layer ------------------------------------
+        
+class TemporalGNN(torch.nn.Module):
+    def __init__(self, dim_in, periods):
+        super().__init__()
+        self.tgnn = A3TGCN(in_channels=dim_in, out_channels=32, periods=periods)
+        self.linear = torch.nn.Linear(32, periods)
+
+    def forward(self, x, edge_index, edge_attr):
+        h = self.tgnn(x, edge_index, edge_attr).relu()
+        h = self.linear(h)
+        return h
+    
