@@ -24,4 +24,41 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from torch_geometric_temporal.nn.recurrent import A3TGCN
 from torch_geometric_temporal.signal import StaticGraphTemporalSignal, temporal_signal_split
+
+
+# ---------------------------------- responsible for loading and preparing traffic data from CSV files ---------------------------------------
+
+class DataPreparation:
+    def __init__(self, speed_file, distance_file):
+        self.speeds = pd.read_csv(speed_file, names=range(0, 228))
+        self.distances = pd.read_csv(distance_file, names=range(0, 228))
+        self.adj = None
+
+    def plot_speed_data(self):
+        plt.figure(figsize=(10, 5), dpi=100)
+        plt.plot(self.speeds)
+        plt.grid(linestyle=':')
+        plt.xlabel('Time (5 min)')
+        plt.ylabel('Traffic speed')
+        plt.show()
+
+    def plot_mean_std_speed(self):
+        mean = self.speeds.mean(axis=1)
+        std = self.speeds.std(axis=1)
+        plt.figure(figsize=(10, 5), dpi=100)
+        plt.plot(mean, 'k-')
+        plt.grid(linestyle=':')
+        plt.fill_between(mean.index, mean - std, mean + std, color='r', alpha=0.1)
+        plt.xlabel('Time (5 min)')
+        plt.ylabel('Traffic speed')
+        plt.show()
+
+    def plot_graph(self):
+        rows, cols = np.where(self.adj > 0)
+        edges = zip(rows.tolist(), cols.tolist())
+        G = nx.Graph()
+        G.add_edges_from(edges)
+        plt.figure(figsize=(10, 5))
+        nx.draw(G, with_labels=True)
+        plt.show()
     
