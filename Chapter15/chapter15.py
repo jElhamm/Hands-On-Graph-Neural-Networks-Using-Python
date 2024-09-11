@@ -103,3 +103,30 @@ class TemporalGNN(torch.nn.Module):
         h = self.linear(h)
         return h
     
+# ------------------------------------ manages the training and evaluation of the temporal GNN model -----------------------------------------
+    
+class ModelTraining:
+    def __init__(self, model, train_dataset, test_dataset, optimizer, lags, speeds):
+        self.model = model
+        self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
+        self.optimizer = optimizer
+        self.lags = lags
+        self.speeds = speeds
+
+    @staticmethod
+    def inverse_zscore(x, mean, std):
+        return x * std + mean
+
+    @staticmethod
+    def MAE(real, pred):
+        return np.mean(np.abs(pred - real))
+
+    @staticmethod
+    def RMSE(real, pred):
+        return np.sqrt(np.mean((pred - real) ** 2))
+
+    @staticmethod
+    def MAPE(real, pred):
+        return np.mean(np.abs(pred - real) / (real + 1e-5))
+    
