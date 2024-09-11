@@ -114,6 +114,39 @@ class ModelTraining:
         self.lags = lags
         self.speeds = speeds
 
+    def train(self, epochs=30):
+        self.model.train()
+        for epoch in range(epochs):
+            loss = 0
+            step = 0
+            for snapshot in self.train_dataset:
+                y_pred = self.model(snapshot.x.unsqueeze(2), snapshot.edge_index, snapshot.edge_attr)
+                loss += torch.mean((y_pred - snapshot.y) ** 2)
+                step += 1
+            loss = loss / (step + 1)
+            loss.backward()
+            self.optimizer.step()
+            self.optimizer.zero_grad()
+            if epoch % 5 == 0:
+                print(f"Epoch {epoch:>2} | Train MSE: {loss:.4f}")
+
+    def evaluate(self):
+        self.model.eval()
+        y_test = []
+        gnn_pred = []
+        for snapshot in self.test_dataset:
+            y_hat = snapshot.y.numpy()
+            y_hat = self.inverse_zscore(y_hat, self.speeds.mean(axis=0), self.speeds.std(axis=0))
+            y_test = np.append(y_test, y_hat)
+
+            y_hat = self.model(snapshot.x.unsqueeze(2), snapshot.edge_index, snapshot.edge_weight).squeeze().detach().numpy()
+            y_hat = self.inverse_zscore(y_hat, self.speeds.mean(axis=0), self.speeds.std(axis=0))
+            gnn_pred = np.append(gnn_pred, y_hat)
+
+        print(f'GNN MAE  = {self.MAE(gnn_pred, y_test):.4f}')
+        print(f'GNN RMSE = {self.RMSE(gnn_pred, y_test):.4f}')
+        print(f'GNN MAPE = {self.MAPE(gnn_pred, y_test):.4f}')
+    
     @staticmethod
     def inverse_zscore(x, mean, std):
         return x * std + mean
