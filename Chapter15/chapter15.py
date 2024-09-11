@@ -146,7 +146,7 @@ class ModelTraining:
         print(f'GNN MAE  = {self.MAE(gnn_pred, y_test):.4f}')
         print(f'GNN RMSE = {self.RMSE(gnn_pred, y_test):.4f}')
         print(f'GNN MAPE = {self.MAPE(gnn_pred, y_test):.4f}')
-    
+
     @staticmethod
     def inverse_zscore(x, mean, std):
         return x * std + mean
@@ -162,4 +162,15 @@ class ModelTraining:
     @staticmethod
     def MAPE(real, pred):
         return np.mean(np.abs(pred - real) / (real + 1e-5))
+    
+
+# --------------------------------------------------------------- Data preparation -----------------------------------------------------------
+    
+data_prep = DataPreparation('PeMSD7_V_228.csv', 'PeMSD7_W_228.csv')
+data_prep.plot_speed_data()
+data_prep.plot_mean_std_speed()
+data_prep.plot_correlation_matrices()
+data_prep.compute_adj()
+data_prep.plot_adj_matrix()
+data_prep.plot_graph()
     
