@@ -53,6 +53,34 @@ class DataPreparation:
         plt.ylabel('Traffic speed')
         plt.show()
 
+    def plot_correlation_matrices(self):
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 8))
+        fig.tight_layout(pad=3.0)
+        ax1.matshow(self.distances)
+        ax1.set_xlabel("Sensor station")
+        ax1.set_ylabel("Sensor station")
+        ax1.title.set_text("Distance matrix")
+        ax2.matshow(-np.corrcoef(self.speeds.T))
+        ax2.set_xlabel("Sensor station")
+        ax2.set_ylabel("Sensor station")
+        ax2.title.set_text("Correlation matrix")
+        plt.show()
+
+    def compute_adj(self, sigma2=0.1, epsilon=0.5):
+        d = self.distances.to_numpy() / 10000.0
+        d2 = d * d
+        n = self.distances.shape[0]
+        w_mask = np.ones([n, n]) - np.identity(n)
+        self.adj = np.exp(-d2 / sigma2) * (np.exp(-d2 / sigma2) >= epsilon) * w_mask
+
+    def plot_adj_matrix(self):
+        plt.figure(figsize=(8, 8))
+        plt.matshow(self.adj, False)
+        plt.colorbar()
+        plt.xlabel("Sensor station")
+        plt.ylabel("Sensor station")
+        plt.show()
+    
     def plot_graph(self):
         rows, cols = np.where(self.adj > 0)
         edges = zip(rows.tolist(), cols.tolist())
