@@ -173,4 +173,19 @@ data_prep.plot_correlation_matrices()
 data_prep.compute_adj()
 data_prep.plot_adj_matrix()
 data_prep.plot_graph()
+
+# -------------------------------------------------------------- Create dataset --------------------------------------------------------------
+
+speeds_norm = (data_prep.speeds - data_prep.speeds.mean(axis=0)) / data_prep.speeds.std(axis=0)
+lags = 24
+horizon = 48
+xs = []
+ys = []
+for i in range(lags, speeds_norm.shape[0] - horizon):
+    xs.append(speeds_norm.to_numpy()[i - lags:i].T)
+    ys.append(speeds_norm.to_numpy()[i + horizon - 1])
+
+edge_index = (np.array(data_prep.adj) > 0).nonzero()
+dataset = StaticGraphTemporalSignal(edge_index, data_prep.adj[data_prep.adj > 0], xs, ys)
+train_dataset, test_dataset = temporal_signal_split(dataset, train_ratio=0.8)
     
