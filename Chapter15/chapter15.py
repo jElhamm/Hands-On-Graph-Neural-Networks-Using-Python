@@ -189,3 +189,15 @@ edge_index = (np.array(data_prep.adj) > 0).nonzero()
 dataset = StaticGraphTemporalSignal(edge_index, data_prep.adj[data_prep.adj > 0], xs, ys)
 train_dataset, test_dataset = temporal_signal_split(dataset, train_ratio=0.8)
     
+# -------------------------------------------------------------- Model setup -----------------------------------------------------------------
+
+model = TemporalGNN(lags, 1).to('cpu')
+optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+print(model)
+
+# -------------------------------------------------------- Train and Evaluate the model ------------------------------------------------------
+
+trainer = ModelTraining(model, train_dataset, test_dataset, optimizer, lags, data_prep.speeds)
+trainer.train(epochs=30)
+
+trainer.evaluate()
