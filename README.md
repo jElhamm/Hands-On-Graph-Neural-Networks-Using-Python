@@ -1,7 +1,7 @@
 <table>
   <tr>
     <td>
-      <img src="https://m.media-amazon.com/images/I/61nGoPcI5jL._SY466_.jpg" alt="Hands-On Graph Neural Networks Book Cover" style="width: 2050px;"/>
+      <img src="https://m.media-amazon.com/images/I/61nGoPcI5jL._SY466_.jpg" alt="Hands-On Graph Neural Networks Book Cover" style="width: 3000px;"/>
     </td>
     <td>
       <h2>Hands-On Graph Neural Networks Using Python</h2>
@@ -16,7 +16,7 @@
    - **Author:** [Maxime Labonne](https://www.amazon.com/stores/Maxime-Labonne/author/B0BVKVJSSQ?ref=ap_rdr&isDramIntegrated=true&shoppingPortalEnabled=true)
    - **Focus Areas:** Graph Neural Networks, PyTorch Geometric, Machine Learning, Node Classification, Graph Embedding, and more
    - **Book Reference:** *Hands-On Graph Neural Networks Using Python*
-   - - **Repository Contents:** 17 Chapters | `.py` and `.ipynb` files | Detailed chapter-wise `README.md` guides
+   - **Repository Contents:** 17 Chapters | `.py` and `.ipynb` files | Detailed chapter-wise `README.md` guides
    - **Download and buy the book:** [www.amazon.com](https://www.amazon.com/Hands-Graph-Neural-Networks-Python/dp/1804617520)
 
 ---
@@ -45,13 +45,13 @@
    | [08](main/Chapter08)       | Scaling Graph Neural Networks                | Learn techniques to scale GNNs for large-scale graph data, ensuring efficient training on massive datasets. |
    | [09](main/Chapter09)       | Graph Classification                         | Implement GNNs for graph classification tasks, using real-world datasets to classify entire graphs rather than individual nodes. |
    | [10](main/Chapter10)       | Link Prediction                              | Use GNNs to predict links in graphs, helping identify missing or future connections between nodes. |
-   | [11](main/Chapter11)       | Graph Generation                             | Explore generative models for graphs, learning how to create new graphs and complete partial ones using GNNs. |
+   | 11       | Graph Generation                             | Explore generative models for graphs, learning how to create new graphs and complete partial ones using GNNs. |
    | [12](main/Chapter02)       | Learning from Heterogeneous Graphs           | Understand how to work with heterogeneous graphs and implement models like Heterogeneous Attention Networks (HAN) to process different types of nodes and edges. |
    | [13](main/Chapter13)       | Temporal Graph Neural Networks               | Learn to work with dynamic or temporal graphs and build GNNs that can handle evolving data over time. |
    | [14](main/Chapter14)       | Explainability                               | Implement GNNExplainer and other tools to interpret GNN models and make sense of the learned representations and predictions. |
    | [15](main/Chapter15)       | Traffic Forecasting                          | Use GNNs to forecast traffic patterns and other spatio-temporal data, improving decision-making in real-time applications. |
-   | [16](main/Chapter16)       | Anomaly Detection                            | Apply GNNs to detect anomalies in graph data, identifying unusual patterns in networks such as fraud detection or outlier nodes. |
-   | [17](main/Chapter17)       | Recommender Systems                          | Build recommender systems using GNNs to provide personalized recommendations for users, applying GNNs to problems like product, movie, or partner recommendations. |
+   | 16       | Anomaly Detection                            | Apply GNNs to detect anomalies in graph data, identifying unusual patterns in networks such as fraud detection or outlier nodes. |
+   | 17       | Recommender Systems                          | Build recommender systems using GNNs to provide personalized recommendations for users, applying GNNs to problems like product, movie, or partner recommendations. |
 
 ---
 
